@@ -5,6 +5,7 @@ import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.end_user.ClientAccountResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.service.AuthServices;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +22,7 @@ public class AuthController {
     AuthServices authServices;
 
     @PostMapping("/signup")
-    ResponseEntity<ApiResponse<ClientAccountResponse>> signupAccountClient(@RequestBody AccountSignupRequest requestBody) throws AppException {
+    ResponseEntity<ApiResponse<ClientAccountResponse>> signupAccountClient(@RequestBody @Valid AccountSignupRequest requestBody) throws AppException {
         ClientAccountResponse clientAccountResponse = authServices.handleSignupAccountClient(requestBody);
         return ResponseEntity.ok(ApiResponse.<ClientAccountResponse>builder()
                 .status(true)
