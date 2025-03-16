@@ -1,0 +1,19 @@
+server:
+  port: 8080
+spring:
+  application:
+      name: cgv cinemas ticket
+  datasource:
+    url: ${MYSQL_CONNECTION:jdbc:mysql://localhost:3306/test}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_USERNAME:12345678}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: update
+    show-sql: true
