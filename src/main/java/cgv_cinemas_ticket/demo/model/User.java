@@ -3,6 +3,8 @@ package cgv_cinemas_ticket.demo.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
 
@@ -23,6 +25,9 @@ public class User {
     @Column(nullable = false, length = 255)
     String name;
 
+    @Column(nullable = true, length = 255)
+    String avatar;
+
     @Column(nullable = true)
     String faviousCinemas;
 
@@ -31,4 +36,10 @@ public class User {
 
     @Column(nullable = false)
     boolean gender;
+
+    @CreatedDate
+    Date createAt;
+
+    @LastModifiedDate
+    Date updateAt;
 }

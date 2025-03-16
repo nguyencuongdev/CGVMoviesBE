@@ -3,7 +3,10 @@ package cgv_cinemas_ticket.demo.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -31,6 +34,12 @@ public class Account {
     boolean status;
     @Column(nullable = false)
     int currentPoint = 0;
+
+    @CreatedDate
+    Date createAt;
+
+    @LastModifiedDate
+    Date updateAt;
 
     @OneToOne
     @JoinColumn(name = "users_ID", referencedColumnName = "id")
