@@ -6,7 +6,7 @@ import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.AccountResponse;
 import cgv_cinemas_ticket.demo.dto.response.AuthenticationResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
-import cgv_cinemas_ticket.demo.service.AuthServices;
+import cgv_cinemas_ticket.demo.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 
 public class AuthController {
-    AuthServices authServices;
+    AuthService authServices;
 
     @PostMapping("/signup")
     ResponseEntity<ApiResponse<AccountResponse>> signupAccountClient(@RequestBody @Valid AccountSignupRequest requestBody) throws AppException {

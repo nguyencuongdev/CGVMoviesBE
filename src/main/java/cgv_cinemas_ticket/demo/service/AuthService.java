@@ -17,7 +17,9 @@ import cgv_cinemas_ticket.demo.model.User;
 import cgv_cinemas_ticket.demo.repository.*;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -37,7 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class AuthServices {
+public class AuthService {
     IAccountRepository accountRepository;
     IRoleRepository roleRepository;
     IPermissionRepository permissionRepository;
@@ -129,6 +132,24 @@ public class AuthServices {
         } catch (Exception ex) {
             log.error("Cannot create token", ex);
             throw new RuntimeException(ex);
+        }
+    }
+
+    public SignedJWT verifyToken(String jwtToken){
+        ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
+        try {
+            JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
+            // chua cac thong tin trong payload token cung nhu methods xu ly verify token;
+            SignedJWT signedJWT = SignedJWT.parse(jwtToken);
+            Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+            var verified = signedJWT.verify(verifier);
+
+            if (!(verified && expirationTime.after(new Date()))) {
+                throw new JwtException(errorCode.getMessage());
+            }
+            return signedJWT;
+        } catch (Exception e) {
+            throw new JwtException(errorCode.getMessage());
         }
     }
 
