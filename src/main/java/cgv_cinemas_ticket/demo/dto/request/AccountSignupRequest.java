@@ -38,5 +38,5 @@ public class AccountSignupRequest {
     String confirmPassword;
     Date dateOfBirth;
     boolean gender;
-    String faviousCinemas;
+//    String faviousCinemas;
 }

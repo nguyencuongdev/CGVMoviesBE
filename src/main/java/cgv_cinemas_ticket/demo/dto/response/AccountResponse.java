@@ -1,5 +1,6 @@
-package cgv_cinemas_ticket.demo.dto.response.end_user;
+package cgv_cinemas_ticket.demo.dto.response;
 
+import cgv_cinemas_ticket.demo.dto.response.end_user.ClientRoleResponse;
 import cgv_cinemas_ticket.demo.model.Level;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -15,13 +16,13 @@ import java.util.Set;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ClientAccountResponse {
+public class AccountResponse {
     Long id;
     String email;
     String phoneNumber;
     boolean status;
     int currentPoint;
     Level level;
-    ClientUserResponse user;
+    UserResponse user;
     Set<ClientRoleResponse> roles;
 }

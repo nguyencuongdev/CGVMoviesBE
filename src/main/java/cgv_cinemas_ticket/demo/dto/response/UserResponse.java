@@ -1,4 +1,4 @@
-package cgv_cinemas_ticket.demo.dto.response.end_user;
+package cgv_cinemas_ticket.demo.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -14,7 +14,7 @@ import java.util.Date;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ClientUserResponse {
+public class UserResponse {
     Long id;
     String name;
     String avatar;

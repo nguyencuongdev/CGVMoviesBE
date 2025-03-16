@@ -2,7 +2,7 @@ package cgv_cinemas_ticket.demo.mapper;
 
 
 import cgv_cinemas_ticket.demo.dto.request.AccountSignupRequest;
-import cgv_cinemas_ticket.demo.dto.response.end_user.ClientAccountResponse;
+import cgv_cinemas_ticket.demo.dto.response.AccountResponse;
 import cgv_cinemas_ticket.demo.model.Account;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,5 +14,5 @@ public interface IAccountMapper {
     @Mapping(target = "user", ignore = true)
     Account toAccountSignupToAccount(AccountSignupRequest accountSignupRequest);
 
-    ClientAccountResponse toAccountToClientAccountResponse(Account account);
+    AccountResponse toAccountToAccountResponse(Account account);
 }

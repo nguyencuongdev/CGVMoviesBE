@@ -17,3 +17,6 @@ spring:
         format_sql: true
         ddl-auto: update
     show-sql: true
+jwt:
+    secret-key: u0f3RgilPpVdrbElfbAiAbzVZHs0HuRuA4SBM6E4ZBI=
+    valid-duration: 2592000 #30day = seconds
