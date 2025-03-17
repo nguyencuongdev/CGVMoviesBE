@@ -1,5 +1,6 @@
 package cgv_cinemas_ticket.demo.service;
 
+import cgv_cinemas_ticket.demo.constraint.MessageResponse;
 import cgv_cinemas_ticket.demo.dto.request.AccountLoginRequest;
 import cgv_cinemas_ticket.demo.dto.request.AccountSignupRequest;
 import cgv_cinemas_ticket.demo.dto.request.RefreshTokenRequest;
@@ -81,11 +82,12 @@ public class AuthService {
     String domainClient;
 
     public AccountResponse handleSignupAccountClient(AccountSignupRequest accountSignupRequest) throws AppException {
+        MessageResponse messageResponse = MessageResponse.SIGNUP_ACCOUNT_FAILED;
         Role role = roleRepository.findById(3L).orElseThrow(
-                () -> new AppException("Signup acccount failed!", HttpStatus.BAD_REQUEST.value()
+                () -> new AppException(messageResponse.getMessage(), HttpStatus.BAD_REQUEST.value()
                 ));
         Level level = levelRepository.findById(1l).orElseThrow(
-                () -> new AppException("Signup acccount failed!", HttpStatus.BAD_REQUEST.value()
+                () -> new AppException(messageResponse.getMessage(), HttpStatus.BAD_REQUEST.value()
                 ));
         User user = userMapper.toAccountSigntoUser(accountSignupRequest);
         user.setCreateAt(new Date());
@@ -197,14 +199,14 @@ public class AuthService {
     }
 
     public SentEmailVerifyResponse handleSentEmailVerify(String email) throws MessagingException {
+        MessageResponse messageResponse = MessageResponse.SENT_EMAIL_VERIFY_ACCOUNT_SUCCESS;
         String tokenVerifyEmail = generateJWTTokenForVerifyEmail(email);
         sentEmailToVerify(email, tokenVerifyEmail);
         return SentEmailVerifyResponse.builder()
                 .status(true)
-                .message("Sent email verification successful!")
+                .message(messageResponse.getMessage())
                 .build();
     }
-
 
     public boolean handleVerifyEmail(String token, VerifyEmailRequest verifyEmailRequest) {
         try {
@@ -248,14 +250,14 @@ public class AuthService {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setTo(toEmail);
-        helper.setSubject("CGV Movies Ticket - Xác nhận email của bạn!");
+        helper.setSubject("CGV Movies Ticket - Xác nhận email tài khoản của bạn!");
 
         // Nội dung HTML
         String htmlContent = String.format("""
                     <html>
                     <body>
                         <h2 style="color: blue;">Chào mừng bạn đến với CGV Movies Ticket!</h2>
-                        <p>Click vào link dưới đây để xác nhận email của bạn:</p>
+                        <p>Click vào link dưới đây để xác nhận email tài khoản của bạn:</p>
                         <a href="%s/user/verify-email/%s">Xác nhận ngay</a>
                         <br>
                         <p style="font-size: 12px; color: gray;">Nếu bạn không yêu cầu đăng ký, hãy bỏ qua email này.</p>
