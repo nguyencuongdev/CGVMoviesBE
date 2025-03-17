@@ -115,22 +115,25 @@ public class AuthService {
             throw new AppException(errorCode.getMessage(), errorCode.getStatusCode().value());
         }
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
-        authenticationResponse.setToken(generateJWTToken(account, validDuration));
+        authenticationResponse.setAccessToken(generateJWTToken(account, validDuration));
+        authenticationResponse.setRefreshToken(generateJWTToken(account, refreshDuration));
         authenticationResponse.setAccount(accountMapper.toAccountToAccountResponse(account));
         return authenticationResponse;
     }
 
-    public RefreshTokenResponse handleRefreshToken(RefreshTokenRequest refreshTokenRequest) throws ParseException, JOSEException {
-//        String jwtToken = request.getHeader("Authorization").replace("Bearer", "");
-        SignedJWT signedJWT = verifyToken(refreshTokenRequest.getToken(), true);
+    public AuthenticationResponse handleRefreshToken(HttpServletRequest request) throws ParseException {
+        String refreshToken = request.getHeader("Authorization").split(" ")[1];
+        SignedJWT signedJWT = verifyToken(refreshToken,true);
         JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
         String email = jwtClaimsSet.getSubject();
         Account account = accountRepository.findByEmail(email);
-        String newJwtToken = generateJWTToken(account, validDuration);
-        return RefreshTokenResponse
+        String newAccessToken = generateJWTToken(account, validDuration);
+        String newRefreshToken = generateJWTToken(account, refreshDuration);
+        return AuthenticationResponse
                 .builder()
-                .token(newJwtToken).
-                build();
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
 
     public String generateJWTToken(Account account, Long expirationTime) throws RuntimeException {
@@ -156,25 +159,26 @@ public class AuthService {
         }
     }
 
-public SignedJWT verifyToken(String jwtToken, boolean isRefreshToken) throws JOSEException, ParseException {
-    ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
-    JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
-    SignedJWT signedJWT = SignedJWT.parse(jwtToken);
-    JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
-    Date expirationTime = isRefreshToken ?
-            (new Date(jwtClaimsSet.getIssueTime().toInstant().toEpochMilli() + refreshDuration * 1000))
-            : jwtClaimsSet.getExpirationTime();
-    var verified = signedJWT.verify(verifier);
-    if (isRefreshToken && !expirationTime.after(new Date())) {
-        errorCode = ErrorCode.REFRESH_TOKEN_INVALID;
-        log.info("Refresh token failed");
-        throw new JwtException(errorCode.getMessage());
-    } else if (!(verified && expirationTime.after(new Date()))) {
-        log.info("Verify token failed");
-        throw new JwtException(errorCode.getMessage());
+    public SignedJWT verifyToken(String jwtToken, boolean isRefreshToken) {
+        ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
+        try {
+
+            JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
+            SignedJWT signedJWT = SignedJWT.parse(jwtToken);
+            JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+            Date expirationTime = jwtClaimsSet.getExpirationTime();
+            var verified = signedJWT.verify(verifier);
+            if (isRefreshToken && !expirationTime.after(new Date())) {
+                errorCode = ErrorCode.REFRESH_TOKEN_INVALID;
+                throw new JwtException(errorCode.getMessage());
+            } else if (!(verified && expirationTime.after(new Date()))) {
+                throw new JwtException(errorCode.getMessage());
+            }
+            return signedJWT;
+        } catch (Exception ex) {
+            throw new JwtException(errorCode.getMessage());
+        }
     }
-    return signedJWT;
-}
 
     public static String buildScopeClaim(Account account) {
         StringBuilder scopeBuilder = new StringBuilder();

@@ -1,8 +1,6 @@
 package cgv_cinemas_ticket.demo.config;
 
 import cgv_cinemas_ticket.demo.service.AuthService;
-import com.nimbusds.jose.JOSEException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -14,7 +12,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
-import java.text.ParseException;
 import java.util.Objects;
 
 @Component
@@ -29,13 +26,7 @@ public class CustomJWTDecoder implements JwtDecoder {
 
     @Override
     public Jwt decode(String token) throws JwtException {
-        try {
-            authService.verifyToken(token,false);
-        } catch (JOSEException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        authService.verifyToken(token, false);
         if (Objects.isNull(nimbusJwtDecoder)) {
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HS256");
             nimbusJwtDecoder = NimbusJwtDecoder.withSecretKey(secretKeySpec)

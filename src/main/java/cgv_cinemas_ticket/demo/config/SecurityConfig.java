@@ -24,7 +24,6 @@ public class SecurityConfig {
     private final String[] publicEndpoints = new String[]{
             "/api/v1/auth/login",
             "/api/v1/auth/signup",
-            "/api/v1/auth/refresh-token",
             "/api/v1/auth/facebook/login",
             "/api/v1/auth/facebook/login/callback",
             "/api/v1/auth/google/login",
