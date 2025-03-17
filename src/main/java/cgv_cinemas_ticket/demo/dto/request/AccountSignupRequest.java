@@ -20,7 +20,7 @@ import java.util.Date;
 @PasswordMatchConstraint(message = "CONFIRM_PASSWORD_NOT_MATCH")
 public class AccountSignupRequest {
     @NotBlank(message = "REQUIRED")
-    @Size(min = 6, max = 255, message = "USER_NAME_INVALID")
+    @Size(min = 2, max = 255, message = "USER_NAME_INVALID")
     String name;
     @NotBlank(message = "REQUIRED")
     @Size(min = 10, max = 10, message = "PHONE_NUMBER_INVALID")

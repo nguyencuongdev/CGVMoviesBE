@@ -184,7 +184,7 @@ public class AuthService {
                 .issuer("CGV Movies Ticket")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        now + (60 * 1000)
+                        now + (5 * 60 * 1000)
                 ))
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());

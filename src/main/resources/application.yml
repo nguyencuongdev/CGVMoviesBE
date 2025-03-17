@@ -6,7 +6,7 @@ spring:
   application:
       name: cgv cinemas ticket
   datasource:
-    url: ${MYSQL_CONNECTION:jdbc:mysql://localhost:3306/test}
+    url: ${MYSQL_CONNECTION:jdbc:mysql://localhost:3306/cgv_cinemas_ticket}
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_USERNAME:12345678}
     driver-class-name: com.mysql.cj.jdbc.Driver

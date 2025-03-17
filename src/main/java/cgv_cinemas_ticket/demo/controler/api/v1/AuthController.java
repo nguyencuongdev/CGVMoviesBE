@@ -51,7 +51,7 @@ public class AuthController {
     ResponseEntity<ApiResponse<AuthenticationResponse>> authentication(HttpServletResponse response, @RequestBody AccountLoginRequest requestBody) throws AppException {
         MessageResponse messageResponse = MessageResponse.AUTHENTICATION_SUCCESS;
         AuthenticationResponse authenticationResponse = authServices.handleAuthentication(requestBody);
-        Cookie cookie = new Cookie("accessToken", authenticationResponse.getAccessToken()); // Tạo cookie với tên và giá trị
+        Cookie cookie = new Cookie("accessToken", authenticationResponse.getAccessToken());
         cookie.setHttpOnly(true);
 //        cookie.setSecure(true);
         cookie.setPath("/");
@@ -88,7 +88,7 @@ public class AuthController {
     ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(HttpServletRequest request, HttpServletResponse response) throws ParseException {
         MessageResponse messageResponse = MessageResponse.REFRESH_TOKEN_SUCCESS;
         AuthenticationResponse authenticationResponse = authServices.handleRefreshToken(request);
-        Cookie cookie = new Cookie("accessToken", authenticationResponse.getAccessToken()); // Tạo cookie với tên và giá trị
+        Cookie cookie = new Cookie("accessToken", authenticationResponse.getAccessToken());
         cookie.setHttpOnly(true);
 //        cookie.setSecure(true);
         cookie.setPath("/");
