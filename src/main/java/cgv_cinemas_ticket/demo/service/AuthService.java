@@ -133,6 +133,9 @@ public class AuthService {
         return authenticationResponse;
     }
 
+    public void handleLogout(HttpServletRequest request) throws ParseException {
+    }
+
     public AuthenticationResponse handleRefreshToken(HttpServletRequest request) throws ParseException {
         String refreshToken = request.getHeader("Authorization").split(" ")[1];
         SignedJWT signedJWT = verifyToken(refreshToken, true);

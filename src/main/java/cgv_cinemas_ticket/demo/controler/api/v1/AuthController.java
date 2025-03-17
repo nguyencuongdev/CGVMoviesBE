@@ -65,6 +65,24 @@ public class AuthController {
                 .build());
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Object>> logout(HttpServletRequest request) throws ParseException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie", "");
+
+        authServices.handleLogout(request);
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(
+                        ApiResponse.builder()
+                                .status(true)
+                                .statusCode(200)
+                                .message("Logout successful!")
+                                .build()
+                );
+    }
+
     @PostMapping("/refresh-token")
     ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(HttpServletRequest request, HttpServletResponse response) throws ParseException, JOSEException {
         AuthenticationResponse authenticationResponse = authServices.handleRefreshToken(request);
