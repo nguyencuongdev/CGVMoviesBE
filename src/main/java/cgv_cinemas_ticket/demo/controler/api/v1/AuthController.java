@@ -2,11 +2,16 @@ package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.dto.request.AccountLoginRequest;
 import cgv_cinemas_ticket.demo.dto.request.AccountSignupRequest;
+import cgv_cinemas_ticket.demo.dto.request.RefreshTokenRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.AccountResponse;
 import cgv_cinemas_ticket.demo.dto.response.AuthenticationResponse;
+import cgv_cinemas_ticket.demo.dto.response.RefreshTokenResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.service.AuthService;
+import com.nimbusds.jose.JOSEException;
+import jakarta.persistence.GeneratedValue;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +19,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -40,6 +47,16 @@ public class AuthController {
                 .statusCode(HttpStatus.OK.value())
                 .message("Authentication successful!")
                 .data(authServices.handleAuthentication(requestBody))
+                .build());
+    }
+
+    @PostMapping("/refresh-token")
+    ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) throws ParseException, JOSEException {
+        return ResponseEntity.ok(ApiResponse.<RefreshTokenResponse>builder()
+                .status(true)
+                .statusCode(HttpStatus.OK.value())
+                .message("Refresh token successful!")
+                .data(authServices.handleRefreshToken(refreshTokenRequest))
                 .build());
     }
 }

@@ -2,8 +2,10 @@ package cgv_cinemas_ticket.demo.service;
 
 import cgv_cinemas_ticket.demo.dto.request.AccountLoginRequest;
 import cgv_cinemas_ticket.demo.dto.request.AccountSignupRequest;
+import cgv_cinemas_ticket.demo.dto.request.RefreshTokenRequest;
 import cgv_cinemas_ticket.demo.dto.response.AccountResponse;
 import cgv_cinemas_ticket.demo.dto.response.AuthenticationResponse;
+import cgv_cinemas_ticket.demo.dto.response.RefreshTokenResponse;
 import cgv_cinemas_ticket.demo.dto.response.end_user.ClientRoleResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ErrorCode;
@@ -20,6 +22,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,6 +64,10 @@ public class AuthService {
     @NonFinal
     @Value("${jwt.valid-duration}")
     Long validDuration;
+
+    @NonFinal
+    @Value("${jwt.refresh-duration}")
+    Long refreshDuration;
 
     public AccountResponse handleSignupAccountClient(AccountSignupRequest accountSignupRequest) throws AppException {
         Role role = roleRepository.findById(3L).orElseThrow(
@@ -112,6 +120,19 @@ public class AuthService {
         return authenticationResponse;
     }
 
+    public RefreshTokenResponse handleRefreshToken(RefreshTokenRequest refreshTokenRequest) throws ParseException, JOSEException {
+//        String jwtToken = request.getHeader("Authorization").replace("Bearer", "");
+        SignedJWT signedJWT = verifyToken(refreshTokenRequest.getToken(), true);
+        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+        String email = jwtClaimsSet.getSubject();
+        Account account = accountRepository.findByEmail(email);
+        String newJwtToken = generateJWTToken(account, validDuration);
+        return RefreshTokenResponse
+                .builder()
+                .token(newJwtToken).
+                build();
+    }
+
     public String generateJWTToken(Account account, Long expirationTime) throws RuntimeException {
         long now = System.currentTimeMillis();
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
@@ -127,7 +148,7 @@ public class AuthService {
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
         try {
-            jwsObject.sign(new MACSigner(secretKey));
+            jwsObject.sign(new MACSigner(secretKey.getBytes()));
             return jwsObject.serialize();
         } catch (Exception ex) {
             log.error("Cannot create token", ex);
@@ -135,23 +156,25 @@ public class AuthService {
         }
     }
 
-    public SignedJWT verifyToken(String jwtToken){
-        ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
-        try {
-            JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
-            // chua cac thong tin trong payload token cung nhu methods xu ly verify token;
-            SignedJWT signedJWT = SignedJWT.parse(jwtToken);
-            Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-            var verified = signedJWT.verify(verifier);
-
-            if (!(verified && expirationTime.after(new Date()))) {
-                throw new JwtException(errorCode.getMessage());
-            }
-            return signedJWT;
-        } catch (Exception e) {
-            throw new JwtException(errorCode.getMessage());
-        }
+public SignedJWT verifyToken(String jwtToken, boolean isRefreshToken) throws JOSEException, ParseException {
+    ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
+    JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
+    SignedJWT signedJWT = SignedJWT.parse(jwtToken);
+    JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+    Date expirationTime = isRefreshToken ?
+            (new Date(jwtClaimsSet.getIssueTime().toInstant().toEpochMilli() + refreshDuration * 1000))
+            : jwtClaimsSet.getExpirationTime();
+    var verified = signedJWT.verify(verifier);
+    if (isRefreshToken && !expirationTime.after(new Date())) {
+        errorCode = ErrorCode.REFRESH_TOKEN_INVALID;
+        log.info("Refresh token failed");
+        throw new JwtException(errorCode.getMessage());
+    } else if (!(verified && expirationTime.after(new Date()))) {
+        log.info("Verify token failed");
+        throw new JwtException(errorCode.getMessage());
     }
+    return signedJWT;
+}
 
     public static String buildScopeClaim(Account account) {
         StringBuilder scopeBuilder = new StringBuilder();

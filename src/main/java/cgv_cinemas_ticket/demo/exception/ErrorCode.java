@@ -20,11 +20,12 @@ public enum ErrorCode {
     AUTHENTICATION_FAILED(1008,"Authentication failed!", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1009,"You do not have permission!", HttpStatus.FORBIDDEN),
     PASSWORD_NOT_MATCH(1010,"Password is incorrect!", HttpStatus.UNAUTHORIZED),
+    ACCOUNT_NOT_EXITED(1016,"Account not available!", HttpStatus.UNAUTHORIZED),
     PERMISSION_ALREADY_EXISTS(1011, "Permission already exists", HttpStatus.CONFLICT),
     USER_DENIED_AUTHORIZED(1012, "User denied authorization", HttpStatus.UNAUTHORIZED),
     USER_CODE_EXPIRED(1013, "Code of user expired", HttpStatus.UNAUTHORIZED),
     USER_TOKEN_EXPIRED(1014, "Token of user expired", HttpStatus.UNAUTHORIZED),
-    ACCOUNT_NOT_EXITED(1015,"Account not exists", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_INVALID(1015,"Refresh token failed!", HttpStatus.LOCKED),
     ;
 
     private ErrorCode(int code, String message, HttpStatusCode statusCode) {

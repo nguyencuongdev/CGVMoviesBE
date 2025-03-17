@@ -18,17 +18,17 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = RuntimeException.class)
-    public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex) {
-        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                ApiResponse.builder()
-                        .status(false)
-                        .statusCode(errorCode.getCode())
-                        .message(errorCode.getMessage())
-                        .build()
-        );
-    }
+//    @ExceptionHandler(value = RuntimeException.class)
+//    public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex) {
+//        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+//                ApiResponse.builder()
+//                        .status(false)
+//                        .statusCode(errorCode.getCode())
+//                        .message(errorCode.getMessage())
+//                        .build()
+//        );
+//    }
 
     @ExceptionHandler(value = AppException.class)
     public ResponseEntity<ApiResponse<Object>> handleAppException(AppException ex) {

@@ -1,11 +1,15 @@
 package cgv_cinemas_ticket.demo.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -13,10 +17,14 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class SecurityConfig {
+    @Autowired
+    @Lazy
+    CustomJWTDecoder customJWTDecoder;
 
     private final String[] publicEndpoints = new String[]{
             "/api/v1/auth/login",
             "/api/v1/auth/signup",
+            "/api/v1/auth/refresh-token",
             "/api/v1/auth/facebook/login",
             "/api/v1/auth/facebook/login/callback",
             "/api/v1/auth/google/login",
@@ -34,7 +42,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
         );
         httpSecurity.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(new CustomJWTDecoder()))
+                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJWTDecoder)
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
         return httpSecurity.build();
@@ -58,5 +68,15 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
     }
 }
