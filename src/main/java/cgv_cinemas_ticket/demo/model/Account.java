@@ -58,6 +58,8 @@ public class Account {
     @ToString.Exclude
     private Set<Role> roles;
 
+    boolean isActive;
+
     @Column(nullable = true)
     String note;
 }

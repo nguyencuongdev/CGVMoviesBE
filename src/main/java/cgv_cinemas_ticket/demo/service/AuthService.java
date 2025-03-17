@@ -3,9 +3,11 @@ package cgv_cinemas_ticket.demo.service;
 import cgv_cinemas_ticket.demo.dto.request.AccountLoginRequest;
 import cgv_cinemas_ticket.demo.dto.request.AccountSignupRequest;
 import cgv_cinemas_ticket.demo.dto.request.RefreshTokenRequest;
+import cgv_cinemas_ticket.demo.dto.request.VerifyEmailRequest;
 import cgv_cinemas_ticket.demo.dto.response.AccountResponse;
 import cgv_cinemas_ticket.demo.dto.response.AuthenticationResponse;
 import cgv_cinemas_ticket.demo.dto.response.RefreshTokenResponse;
+import cgv_cinemas_ticket.demo.dto.response.SentEmailVerifyResponse;
 import cgv_cinemas_ticket.demo.dto.response.end_user.ClientRoleResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ErrorCode;
@@ -22,6 +24,8 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,8 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
@@ -56,6 +62,7 @@ public class AuthService {
     IRoleMapper roleMapper;
 
     PasswordEncoder passwordEncoder;
+    JavaMailSender mailSender;
 
     @NonFinal
     @Value("${jwt.secret-key}")
@@ -68,6 +75,10 @@ public class AuthService {
     @NonFinal
     @Value("${jwt.refresh-duration}")
     Long refreshDuration;
+
+    @NonFinal
+    @Value("${domain-client}")
+    String domainClient;
 
     public AccountResponse handleSignupAccountClient(AccountSignupRequest accountSignupRequest) throws AppException {
         Role role = roleRepository.findById(3L).orElseThrow(
@@ -88,6 +99,7 @@ public class AuthService {
         account.setRoles(roles);
         account.setLevel(level);
         account.setUser(user);
+        account.setActive(false);
         account.setCreateAt(new Date());
         account.setUpdateAt(new Date());
 
@@ -123,7 +135,7 @@ public class AuthService {
 
     public AuthenticationResponse handleRefreshToken(HttpServletRequest request) throws ParseException {
         String refreshToken = request.getHeader("Authorization").split(" ")[1];
-        SignedJWT signedJWT = verifyToken(refreshToken,true);
+        SignedJWT signedJWT = verifyToken(refreshToken, true);
         JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
         String email = jwtClaimsSet.getSubject();
         Account account = accountRepository.findByEmail(email);
@@ -159,6 +171,55 @@ public class AuthService {
         }
     }
 
+    public String generateJWTTokenForVerifyEmail(String email) throws RuntimeException {
+        long now = System.currentTimeMillis();
+        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(email)
+                .issuer("CGV Movies Ticket")
+                .issueTime(new Date())
+                .expirationTime(new Date(
+                        now + (60 * 1000)
+                ))
+                .build();
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
+        try {
+            jwsObject.sign(new MACSigner(secretKey.getBytes()));
+            return jwsObject.serialize();
+        } catch (Exception ex) {
+            log.error("Cannot create token", ex);
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public SentEmailVerifyResponse handleSentEmailVerify(String email) throws MessagingException {
+        String tokenVerifyEmail = generateJWTTokenForVerifyEmail(email);
+        sentEmailToVerify(email, tokenVerifyEmail);
+        return SentEmailVerifyResponse.builder()
+                .status(true)
+                .message("Sent email verification successful!")
+                .build();
+    }
+
+
+    public boolean handleVerifyEmail(String token, VerifyEmailRequest verifyEmailRequest) {
+        try {
+            SignedJWT signedJWT = verifyToken(token, false);
+            String emailDecodedJWT = signedJWT.getJWTClaimsSet().getSubject();
+            if(emailDecodedJWT.equals(verifyEmailRequest.getEmail())){
+                Account account = accountRepository.findByEmail(emailDecodedJWT);
+                account.setActive(true);
+                accountRepository.save(account);
+                return true;
+            }
+           return false;
+        } catch (Exception e) {
+            ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
+            throw new JwtException(errorCode.getMessage());
+        }
+    }
+
     public SignedJWT verifyToken(String jwtToken, boolean isRefreshToken) {
         ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
         try {
@@ -178,6 +239,29 @@ public class AuthService {
         } catch (Exception ex) {
             throw new JwtException(errorCode.getMessage());
         }
+    }
+
+    public void sentEmailToVerify(String toEmail, String tokenVerifyEmail) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setTo(toEmail);
+        helper.setSubject("CGV Movies Ticket - Xác nhận email của bạn!");
+
+        // Nội dung HTML
+        String htmlContent = String.format("""
+                    <html>
+                    <body>
+                        <h2 style="color: blue;">Chào mừng bạn đến với CGV Movies Ticket!</h2>
+                        <p>Click vào link dưới đây để xác nhận email của bạn:</p>
+                        <a href="%s/user/verify-email/%s">Xác nhận ngay</a>
+                        <br>
+                        <p style="font-size: 12px; color: gray;">Nếu bạn không yêu cầu đăng ký, hãy bỏ qua email này.</p>
+                    </body>
+                    </html>
+                """,domainClient, tokenVerifyEmail);
+
+        helper.setText(htmlContent, true);
+        mailSender.send(message);
     }
 
     public static String buildScopeClaim(Account account) {

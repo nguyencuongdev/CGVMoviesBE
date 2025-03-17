@@ -1,5 +1,7 @@
+domain-client: http://localhost:3000
 server:
   port: 8080
+  server-url: http://localhost:8080
 spring:
   application:
       name: cgv cinemas ticket
@@ -17,6 +19,17 @@ spring:
         format_sql: true
         ddl-auto: update
     show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:cuong170603@gmail.com}
+    password: ${MAIL_PASSWORD:kjiydlunhuiqgrma}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
 jwt:
     secret-key: u0f3RgilPpVdrbElfbAiAbzVZHs0HuRuA4SBM6E4ZBI=
     valid-duration: 120 #30day = seconds =2592000
