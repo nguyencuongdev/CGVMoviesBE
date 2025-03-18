@@ -20,6 +20,10 @@ public enum MessageResponse {
     LEVEL_GET_ALL_SUCCESS("level-get-all-success"),
     LEVEL_UPDATE_SUCCESS("level-update-success"),
     LEVEL_DELETE_SUCCESS("level-delete-success"),
+    POPCOM_ADD_NEW_SUCCESS("popcom-add-new-success"),
+    POPCOM_GET_ALL_SUCCESS("popcom-get-all-success"),
+    POPCOM_UPDATE_SUCCESS("popcom-update-success"),
+    POPCOM_DELETE_SUCCESS("popcom-delete-success"),
     ;
     private final String message;
 }
