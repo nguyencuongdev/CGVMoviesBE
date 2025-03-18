@@ -3,6 +3,10 @@ package cgv_cinemas_ticket.demo.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.util.Date;
 
 @Entity
 @Table(name = "levels")
@@ -21,4 +25,9 @@ public class Level {
     String name;
     @Column(nullable = false)
     int point;
+
+    @CreatedDate
+    Date createAt;
+    @LastModifiedDate
+    Date updateAt;
 }

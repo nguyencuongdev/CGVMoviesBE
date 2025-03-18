@@ -9,8 +9,8 @@ public enum ErrorCode {
     // Trong enum có thể có hàm contractor và các property. Các hằng số trong enum và contractor được ngăn cách boi dau chấm phảy
     // đây là các hằng số của enum với mỗi enum là một instance của enum (đây là syntax gọi contractor trong enum)
     // (9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR) -> khởi tạo các giá trị property của một hằng số enum
-    INTERNAL_SERVER_ERROR(1000, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
-    METHOD_NOT_ALLOWED(1002, "Method of request not allowed!", HttpStatus.METHOD_NOT_ALLOWED),
+    INTERNAL_SERVER_ERROR(1000, "server-internal-error", HttpStatus.INTERNAL_SERVER_ERROR),
+    METHOD_NOT_ALLOWED(1002, "method-not-support", HttpStatus.METHOD_NOT_ALLOWED),
     ENDPOINT_NOT_FOUND(1003, "Endpoint of request not found!", HttpStatus.NOT_FOUND),
     MULTIPART_FILE_NULL(1004, "Request required a file!", HttpStatus.BAD_REQUEST),
     FILE_DELETED_FAILED(1005, "File deleted failed!", HttpStatus.BAD_REQUEST),
@@ -26,6 +26,7 @@ public enum ErrorCode {
     USER_CODE_EXPIRED(1013, "Code of user expired", HttpStatus.UNAUTHORIZED),
     USER_TOKEN_EXPIRED(1014, "Token of user expired", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_INVALID(1015,"Refresh token failed!", HttpStatus.LOCKED),
+    LEVEL_NOT_EXISTED(1015,"level-not-existed", HttpStatus.NOT_FOUND)
     ;
 
     private ErrorCode(int code, String message, HttpStatusCode statusCode) {

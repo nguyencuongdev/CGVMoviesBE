@@ -32,5 +32,5 @@ spring:
           auth: true
 jwt:
     secret-key: u0f3RgilPpVdrbElfbAiAbzVZHs0HuRuA4SBM6E4ZBI=
-    valid-duration: 120 #30day = seconds =2592000
+    valid-duration: 2592000 #30day = seconds =2592000
     refresh-duration: 31104000 #365day = seconds

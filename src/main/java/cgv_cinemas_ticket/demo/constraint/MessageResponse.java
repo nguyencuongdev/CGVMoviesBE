@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public enum MessageResponse {
+    //    Constraint common
     VERIFY_EMAIL_ACCOUNT_SUCCESS("verify-email-account-success"),
     SENT_EMAIL_VERIFY_ACCOUNT_SUCCESS("verify-email-account-success"),
     REFRESH_TOKEN_SUCCESS("refresh-token-success"),
@@ -14,6 +15,11 @@ public enum MessageResponse {
     LOGOUT_SUCCESS("logout-success"),
     SIGNUP_ACCOUNT_SUCCESS("signup-account-success"),
     SIGNUP_ACCOUNT_FAILED("signup-account-failed"),
+    //    Constraints for page content management
+    LEVEL_ADD_NEW_SUCCESS("level-add-new-success"),
+    LEVEL_GET_ALL_SUCCESS("level-get-all-success"),
+    LEVEL_UPDATE_SUCCESS("level-update-success"),
+    LEVEL_DELETE_SUCCESS("level-delete-success"),
     ;
     private final String message;
 }

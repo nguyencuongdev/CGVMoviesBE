@@ -12,8 +12,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientRoleResponse {
     Long id;
     String name;

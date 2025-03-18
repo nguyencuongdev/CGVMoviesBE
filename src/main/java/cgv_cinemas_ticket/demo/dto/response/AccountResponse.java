@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -22,6 +23,8 @@ public class AccountResponse {
     String phoneNumber;
     boolean status;
     int currentPoint;
+    Date createAt;
+    Date updateAt;
     Level level;
     UserResponse user;
     Set<ClientRoleResponse> roles;
