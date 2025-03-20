@@ -27,7 +27,8 @@ public enum ErrorCode {
     USER_TOKEN_EXPIRED(1014, "Token of user expired", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_INVALID(1015, "Refresh token failed!", HttpStatus.LOCKED),
     LEVEL_NOT_EXISTED(1016, "level-not-existed", HttpStatus.NOT_FOUND),
-    POPCOM_NOT_EXISTED(1017, "popcom-not-existed", HttpStatus.NOT_FOUND);
+    POPCOM_NOT_EXISTED(1017, "popcom-not-existed", HttpStatus.NOT_FOUND),
+    TICKET_MOVIE_NOT_EXISTED(1018, "ticket_movie-not-existed", HttpStatus.NOT_FOUND);
 
     private ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

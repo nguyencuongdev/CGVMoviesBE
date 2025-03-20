@@ -24,6 +24,10 @@ public enum MessageResponse {
     POPCOM_GET_ALL_SUCCESS("popcom-get-all-success"),
     POPCOM_UPDATE_SUCCESS("popcom-update-success"),
     POPCOM_DELETE_SUCCESS("popcom-delete-success"),
+    TICKET_MOVIE_ADD_NEW_SUCCESS("ticket-movie-add-new-success"),
+    TICKET_MOVIE_GET_ALL_SUCCESS("ticket-movie-get-all-success"),
+    TICKET_MOVIE_UPDATE_SUCCESS("ticket-movie-update-success"),
+    TICKET_MOVIE_DELETE_SUCCESS("ticket-movie-delete-success"),
     ;
     private final String message;
 }

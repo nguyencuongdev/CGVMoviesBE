@@ -10,6 +10,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleMethodNotAllowedException(HttpRequestMethodNotSupportedException ex) {
         ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
+                ApiResponse.builder()
+                        .status(false)
+                        .statusCode(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(value = MultipartException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMultipartException(MultipartException ex) {
+        ErrorCode errorCode = ErrorCode.MULTIPART_FILE_NULL;
+        return ResponseEntity.badRequest().body(
                 ApiResponse.builder()
                         .status(false)
                         .statusCode(errorCode.getCode())
