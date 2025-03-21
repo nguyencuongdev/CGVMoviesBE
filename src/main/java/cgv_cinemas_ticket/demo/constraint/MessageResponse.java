@@ -28,6 +28,10 @@ public enum MessageResponse {
     TICKET_MOVIE_GET_ALL_SUCCESS("ticket-movie-get-all-success"),
     TICKET_MOVIE_UPDATE_SUCCESS("ticket-movie-update-success"),
     TICKET_MOVIE_DELETE_SUCCESS("ticket-movie-delete-success"),
+    THEATER_ADD_NEW_SUCCESS("theater-add-new-success"),
+    THEATER_GET_ALL_SUCCESS("theater-get-all-success"),
+    THEATER_UPDATE_SUCCESS("theater-update-success"),
+    THEATER_DELETE_SUCCESS("theater-delete-success"),
     ;
     private final String message;
 }

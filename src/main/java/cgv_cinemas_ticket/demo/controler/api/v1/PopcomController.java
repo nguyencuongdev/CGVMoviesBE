@@ -65,7 +65,7 @@ public class PopcomController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<PopcomResponse>> deleteLevel(@PathVariable String id) throws AppException {
+    ResponseEntity<ApiResponse<PopcomResponse>> deletePopcom(@PathVariable String id) throws AppException {
         MessageResponse messageResponse = MessageResponse.POPCOM_DELETE_SUCCESS;
         popcomService.handleDeletePopcom(id);
         return ResponseEntity.ok(ApiResponse.<PopcomResponse>builder()

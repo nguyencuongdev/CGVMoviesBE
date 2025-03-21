@@ -2,8 +2,10 @@ package cgv_cinemas_ticket.demo.service;
 
 
 import cgv_cinemas_ticket.demo.dto.response.FileContentResponse;
+import cgv_cinemas_ticket.demo.dto.response.FileUploadResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ErrorCode;
+import cgv_cinemas_ticket.demo.mapper.IFileMapper;
 import cgv_cinemas_ticket.demo.model.FileTemp;
 import cgv_cinemas_ticket.demo.repository.IFileTempRepository;
 import jakarta.annotation.PostConstruct;
@@ -35,6 +37,8 @@ import java.util.Random;
 public class FileService {
     @Autowired
     IFileTempRepository fileTempRepository;
+    @Autowired
+    IFileMapper fileMapper;
 
     @Value("${file.upload-dir}")
     String uploadDir;
@@ -58,7 +62,7 @@ public class FileService {
     }
 
     // Storage upload file to server and return file URL
-    public String storeFileUpload(MultipartFile fileUpload) throws AppException {
+    public FileUploadResponse storeFileUpload(MultipartFile fileUpload) throws AppException {
         String extension = FilenameUtils.getExtension(fileUpload.getOriginalFilename());
         String generatedFileName = randomFileName() + "." + extension;
         Path filePath = storageDirPath.resolve(generatedFileName).normalize().toAbsolutePath();
@@ -83,9 +87,10 @@ public class FileService {
                 .src(srcImg)
                 .fileName(generatedFileName)
                 .build();
-        fileTempRepository.save(fileTemp);
-        // Return file URL so the client can view file content
-        return srcImg;
+        fileTemp = fileTempRepository.save(fileTemp);
+        FileUploadResponse fileUploadResponse = fileMapper.toFileTempToFileUploadResponse(fileTempRepository.save(fileTemp));
+        fileUploadResponse.setSrcImg(fileTemp.getSrc());
+        return fileUploadResponse;
     }
 
     public FileContentResponse readFileContent(String fileName) throws AppException {

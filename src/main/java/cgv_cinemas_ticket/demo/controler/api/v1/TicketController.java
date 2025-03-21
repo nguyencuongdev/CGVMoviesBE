@@ -51,7 +51,7 @@ public class TicketController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<TicketMovieResponse>> updatePopcom(@PathVariable String id,@RequestBody @Valid TicketMovieUpdateRequest ticketUpdateRequest) throws AppException {
+    ResponseEntity<ApiResponse<TicketMovieResponse>> updateTicketMovie(@PathVariable String id,@RequestBody @Valid TicketMovieUpdateRequest ticketUpdateRequest) throws AppException {
         MessageResponse messageResponse = MessageResponse.TICKET_MOVIE_UPDATE_SUCCESS;
         return ResponseEntity.ok(ApiResponse.<TicketMovieResponse>builder()
                 .status(true)
@@ -63,7 +63,7 @@ public class TicketController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<TicketMovieResponse>> deleteLevel(@PathVariable String id) throws AppException {
+    ResponseEntity<ApiResponse<TicketMovieResponse>> deleteTicketMovie(@PathVariable String id) throws AppException {
         MessageResponse messageResponse = MessageResponse.TICKET_MOVIE_DELETE_SUCCESS;
         ticketMovieService.handleDeleteTicketMovie(id);
         return ResponseEntity.ok(ApiResponse.<TicketMovieResponse>builder()

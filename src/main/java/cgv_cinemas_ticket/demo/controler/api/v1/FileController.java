@@ -2,6 +2,7 @@ package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.FileContentResponse;
+import cgv_cinemas_ticket.demo.dto.response.FileUploadResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ErrorCode;
 import cgv_cinemas_ticket.demo.service.FileService;
@@ -9,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +32,14 @@ public class FileController {
     // Endpoint upload file
     @PostMapping("/upload")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    public ResponseEntity<ApiResponse<Object>> uploadFile(@RequestParam("file") MultipartFile file) throws AppException {
-        String fileURL = fileService.storeFileUpload(file);
-        // Trả về URL để client xem file
+    public ResponseEntity<ApiResponse<FileUploadResponse>> uploadFile(@RequestParam("file") MultipartFile file) throws AppException {
+        FileUploadResponse fileUploadResponse = fileService.storeFileUpload(file);
+        // Trả về Info file uploaded on the server: id, src, fileName
         return ResponseEntity.ok(
-                ApiResponse.builder()
+                ApiResponse.<FileUploadResponse>builder()
                         .status(false)
                         .statusCode(HttpStatus.OK.value())
-                        .data(fileURL)
+                        .data(fileUploadResponse)
                         .message("upload-file-success!")
                         .build()
         );
