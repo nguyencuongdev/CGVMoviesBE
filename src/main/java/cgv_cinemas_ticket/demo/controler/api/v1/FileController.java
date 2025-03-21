@@ -1,5 +1,7 @@
 package cgv_cinemas_ticket.demo.controler.api.v1;
 
+import cgv_cinemas_ticket.demo.dto.request.DeleteMultiFileRequest;
+import cgv_cinemas_ticket.demo.dto.request.FileInfoRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.FileContentResponse;
 import cgv_cinemas_ticket.demo.dto.response.FileUploadResponse;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @RestController
@@ -29,7 +32,7 @@ import java.io.IOException;
 public class FileController {
     FileService fileService;
 
-    // Endpoint upload file
+    // Endpoint upload single file
     @PostMapping("/upload")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
     public ResponseEntity<ApiResponse<FileUploadResponse>> uploadFile(@RequestParam("file") MultipartFile file) throws AppException {
@@ -40,6 +43,22 @@ public class FileController {
                         .status(false)
                         .statusCode(HttpStatus.OK.value())
                         .data(fileUploadResponse)
+                        .message("upload-file-success!")
+                        .build()
+        );
+    }
+
+    //    Endpoint upload multi file
+    @PostMapping("/uploads")
+    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+    public ResponseEntity<ApiResponse<List<FileUploadResponse>>> uploadMultiFile(@RequestParam("files") MultipartFile[] files) throws AppException {
+        List<FileUploadResponse> fileUploadResponseList = fileService.handleStoreMultiFileUpload(files);
+//         Trả về list info file uploaded on the server: id, src, fileName
+        return ResponseEntity.ok(
+                ApiResponse.<List<FileUploadResponse>>builder()
+                        .status(false)
+                        .statusCode(HttpStatus.OK.value())
+                        .data(fileUploadResponseList)
                         .message("upload-file-success!")
                         .build()
         );
@@ -82,5 +101,20 @@ public class FileController {
         } catch (IOException ex) {
             throw new AppException(errorCode.getMessage(), errorCode.getCode());
         }
+    }
+
+    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+    @DeleteMapping()
+    public ResponseEntity<ApiResponse<List<Long>>> deleteMultiFile(@RequestBody DeleteMultiFileRequest deleteMultiFileRequest) throws AppException, IOException {
+        List<Long> fileDeletedIds = fileService.handleDeleteMultiFile(deleteMultiFileRequest);
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.<List<Long>>builder()
+                                .status(true)
+                                .statusCode(HttpStatus.OK.value())
+                                .message("Delete files successfully!")
+                                .data(fileDeletedIds)
+                                .build()
+                );
     }
 }

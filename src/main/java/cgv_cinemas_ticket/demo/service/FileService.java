@@ -1,6 +1,8 @@
 package cgv_cinemas_ticket.demo.service;
 
 
+import cgv_cinemas_ticket.demo.dto.request.DeleteMultiFileRequest;
+import cgv_cinemas_ticket.demo.dto.request.FileInfoRequest;
 import cgv_cinemas_ticket.demo.dto.response.FileContentResponse;
 import cgv_cinemas_ticket.demo.dto.response.FileUploadResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
@@ -28,9 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -93,6 +93,16 @@ public class FileService {
         return fileUploadResponse;
     }
 
+    public List<FileUploadResponse> handleStoreMultiFileUpload(MultipartFile[] files) throws AppException {
+        List<FileUploadResponse> fileUploadResponses = new ArrayList<>();
+        for (MultipartFile file : files) {
+            FileUploadResponse fileUploadResponse = this.storeFileUpload(file);
+            fileUploadResponses.add(fileUploadResponse);
+        }
+        return fileUploadResponses;
+    }
+
+
     public FileContentResponse readFileContent(String fileName) throws AppException {
         try {
             Path filePath = Paths.get(uploadDir).resolve(fileName).normalize().toAbsolutePath();
@@ -128,6 +138,17 @@ public class FileService {
             return Files.deleteIfExists(filePath);
         }
         return false;
+    }
+
+    public List<Long> handleDeleteMultiFile(DeleteMultiFileRequest deleteMultiFileRequest) throws IOException {
+        List<Long> fileDeletedIds = new ArrayList<>();
+        for(FileInfoRequest file : deleteMultiFileRequest.getData()){
+            boolean deleted = this.deleteFileStoraged(file.getFileName());
+            if(deleted){
+                fileDeletedIds.add(file.getId());
+            }
+        }
+        return fileDeletedIds;
     }
 
     public boolean isValidFile(MultipartFile file, Path filePath) throws IOException {
