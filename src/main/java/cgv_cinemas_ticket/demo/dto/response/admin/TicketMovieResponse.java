@@ -1,4 +1,4 @@
-package cgv_cinemas_ticket.demo.dto.response;
+package cgv_cinemas_ticket.demo.dto.response.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

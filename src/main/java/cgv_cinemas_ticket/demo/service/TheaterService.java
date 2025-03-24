@@ -1,8 +1,10 @@
 package cgv_cinemas_ticket.demo.service;
 
-import cgv_cinemas_ticket.demo.dto.request.TheaterNewRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.TheaterNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.admin.TheaterImageResponse;
 import cgv_cinemas_ticket.demo.dto.response.admin.TheaterResponse;
+import cgv_cinemas_ticket.demo.exception.AppException;
+import cgv_cinemas_ticket.demo.exception.ErrorCode;
 import cgv_cinemas_ticket.demo.mapper.ITheaterMapper;
 import cgv_cinemas_ticket.demo.model.Theater;
 import cgv_cinemas_ticket.demo.model.TheaterImage;
@@ -30,8 +32,9 @@ public class TheaterService {
     ITheaterImageRepository theaterImageRepository;
     IFileTempRepository fileTempRepository;
     ITheaterMapper theaterMapper;
+    private final FileService fileService;
 
-    public TheaterResponse handleAddNewTheater(TheaterNewRequest theaterNewRequest) {
+    public TheaterResponse handleAddNewTheater(TheaterNewOrUpdateRequest theaterNewRequest) {
         Theater theater = theaterMapper.toTheaterNewRequestToTheater(theaterNewRequest);
         Set<TheaterImage> theaterImageList = new HashSet<>();
         theaterNewRequest.getImages().forEach(fileImage -> {
@@ -59,16 +62,48 @@ public class TheaterService {
         List<Theater> theaterList = theaterRepository.findAll();
         return theaterList.stream().map(theaterMapper::toTheaterToTheaterResponse).toList();
     }
-//
-//    public TicketMovieResponse handleUpdateTicketMovie(String id, TicketMovieUpdateRequest ticketMovieUpdateRequest) throws AppException {
-//        ErrorCode errorCode = ErrorCode.TICKET_MOVIE_NOT_EXISTED;
-//        TicketMovie ticketMovie = ticketMovieRepository.findById(Long.parseLong(id))
-//                .orElseThrow(() -> new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
-//
-//        ticketMovieMapper.updateTicketMovie(ticketMovie,ticketMovieUpdateRequest);
-//        ticketMovieRepository.save(ticketMovie);
-//        return ticketMovieMapper.toTicketMovieToTicketMovieResponse(ticketMovie);
-//    }
+
+    //
+    public TheaterResponse handleUpdateTheater(String id, TheaterNewOrUpdateRequest theaterUpdateRequest) throws AppException {
+        ErrorCode errorCode = ErrorCode.THEATER_NOT_EXISTED;
+        Theater theater = theaterRepository.findById(Long.parseLong(id))
+                .orElseThrow(() -> new AppException(errorCode.getMessage(), errorCode.getStatusCode().value()));
+
+        // delete info old theater image list
+        Set<Long> theaterImageOldIds = new HashSet<>();
+        theater.getImages().forEach(fileImage -> {
+            try {
+                fileService.deleteFileStoraged(fileImage.getFileName());
+            } catch (Exception ex) {
+                log.error("Delete file with fileName: {} get a error: {}", fileImage.getFileName(), ex.getMessage());
+            }
+        });
+        theaterImageRepository.deleteAllById(theaterImageOldIds);
+
+        // set theater image list new for theater
+        Set<TheaterImage> theaterImageList = new HashSet<>();
+        theaterUpdateRequest.getImages().forEach(fileImage -> {
+            TheaterImage theaterImage = TheaterImage.builder()
+                    .srcImg(fileImage.getSrc())
+                    .fileName(fileImage.getFileName())
+                    .theater(theater)
+                    .build();
+            theaterImageList.add(theaterImage);
+        });
+        Set<TheaterImageResponse> theaterImageResponseList = theaterImageRepository.saveAll(theaterImageList)
+                .stream()
+                .map(theaterMapper::toTheaterImageToTheaterImageResponse)
+                .collect(Collectors.toSet());
+
+        theater.setStatus(true);
+        theater.setUpdateAt(new Date());
+        theaterMapper.updateTheater(theater, theaterUpdateRequest);
+        theaterRepository.save(theater);
+
+        TheaterResponse theaterResponse = theaterMapper.toTheaterToTheaterResponse(theater);
+        theaterResponse.setImages(theaterImageResponseList);
+        return theaterResponse;
+    }
 //    public boolean handleDeleteTicketMovie(String id) throws AppException {
 //        ErrorCode errorCode = ErrorCode.TICKET_MOVIE_NOT_EXISTED;
 //        TicketMovie ticketMovie = ticketMovieRepository.findById(Long.parseLong(id))

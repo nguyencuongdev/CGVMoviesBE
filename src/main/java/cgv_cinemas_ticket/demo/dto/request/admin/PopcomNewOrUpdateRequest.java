@@ -1,4 +1,4 @@
-package cgv_cinemas_ticket.demo.dto.request;
+package cgv_cinemas_ticket.demo.dto.request.admin;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

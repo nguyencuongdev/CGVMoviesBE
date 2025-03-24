@@ -1,6 +1,6 @@
 package cgv_cinemas_ticket.demo.service;
 
-import cgv_cinemas_ticket.demo.dto.request.LevelNewOrUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.LevelNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.admin.LevelResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ErrorCode;

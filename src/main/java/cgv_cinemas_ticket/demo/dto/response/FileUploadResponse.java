@@ -10,5 +10,5 @@ import lombok.*;
 public class FileUploadResponse {
     String id;
     String fileName;
-    String srcImg;
+    String src;
 }

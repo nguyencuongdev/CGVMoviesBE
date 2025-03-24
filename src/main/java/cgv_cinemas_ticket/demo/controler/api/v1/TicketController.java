@@ -1,10 +1,10 @@
 package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.constraint.MessageResponse;
-import cgv_cinemas_ticket.demo.dto.request.TicketMovieNewRequest;
-import cgv_cinemas_ticket.demo.dto.request.TicketMovieUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.TicketMovieNewRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.TicketMovieUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
-import cgv_cinemas_ticket.demo.dto.response.TicketMovieResponse;
+import cgv_cinemas_ticket.demo.dto.response.admin.TicketMovieResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.service.TicketMoiveService;
 import jakarta.validation.Valid;

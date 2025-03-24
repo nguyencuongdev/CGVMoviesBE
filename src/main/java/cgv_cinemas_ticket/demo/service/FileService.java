@@ -88,9 +88,7 @@ public class FileService {
                 .fileName(generatedFileName)
                 .build();
         fileTemp = fileTempRepository.save(fileTemp);
-        FileUploadResponse fileUploadResponse = fileMapper.toFileTempToFileUploadResponse(fileTempRepository.save(fileTemp));
-        fileUploadResponse.setSrcImg(fileTemp.getSrc());
-        return fileUploadResponse;
+        return fileMapper.toFileTempToFileUploadResponse(fileTempRepository.save(fileTemp));
     }
 
     public List<FileUploadResponse> handleStoreMultiFileUpload(MultipartFile[] files) throws AppException {

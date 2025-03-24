@@ -1,9 +1,8 @@
-package cgv_cinemas_ticket.demo.dto.request;
+package cgv_cinemas_ticket.demo.dto.request.admin;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 
 @Getter
 @Setter
@@ -12,11 +11,9 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TicketMovieNewRequest {
-    @NotBlank(message = "required")
+public class TicketMovieUpdateRequest {
     @Size(min = 2, max = 255, message = "ticket-movie-name-invalid")
     String name;
-    @NotNull(message = "required")
     int price;
     String note;
 }

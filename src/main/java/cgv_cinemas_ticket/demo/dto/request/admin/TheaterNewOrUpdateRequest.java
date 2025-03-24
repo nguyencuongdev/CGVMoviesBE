@@ -1,7 +1,6 @@
-package cgv_cinemas_ticket.demo.dto.request;
+package cgv_cinemas_ticket.demo.dto.request.admin;
 
-import cgv_cinemas_ticket.demo.model.TheaterImage;
-import jakarta.persistence.*;
+import cgv_cinemas_ticket.demo.dto.request.FileInfoRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,7 +8,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
-import java.util.Set;
 
 
 @Getter
@@ -19,7 +17,7 @@ import java.util.Set;
 @Builder
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TheaterNewRequest {
+public class TheaterNewOrUpdateRequest {
     @NotBlank(message = "required")
     @Size(min = 2, max = 255, message = "theater-name-invalid")
     String name;
@@ -38,6 +36,7 @@ public class TheaterNewRequest {
     @NotBlank(message = "required")
     @Size(min = 2, max = 255, message = "theater-name-invalid")
     String linkMap;
+    @NotNull(message = "required")
     List<FileInfoRequest> images;
     String note;
 }

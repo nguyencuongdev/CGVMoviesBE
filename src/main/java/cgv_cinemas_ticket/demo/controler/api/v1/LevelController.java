@@ -1,7 +1,7 @@
 package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.constraint.MessageResponse;
-import cgv_cinemas_ticket.demo.dto.request.LevelNewOrUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.LevelNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.admin.LevelResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;

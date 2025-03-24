@@ -56,7 +56,7 @@ public class FileController {
 //         Trả về list info file uploaded on the server: id, src, fileName
         return ResponseEntity.ok(
                 ApiResponse.<List<FileUploadResponse>>builder()
-                        .status(false)
+                        .status(true)
                         .statusCode(HttpStatus.OK.value())
                         .data(fileUploadResponseList)
                         .message("upload-file-success!")

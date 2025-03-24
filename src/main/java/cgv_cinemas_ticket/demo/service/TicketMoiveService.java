@@ -1,8 +1,8 @@
 package cgv_cinemas_ticket.demo.service;
 
-import cgv_cinemas_ticket.demo.dto.request.TicketMovieNewRequest;
-import cgv_cinemas_ticket.demo.dto.request.TicketMovieUpdateRequest;
-import cgv_cinemas_ticket.demo.dto.response.TicketMovieResponse;
+import cgv_cinemas_ticket.demo.dto.request.admin.TicketMovieNewRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.TicketMovieUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.response.admin.TicketMovieResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ErrorCode;
 import cgv_cinemas_ticket.demo.mapper.ITicketMovieMapper;
