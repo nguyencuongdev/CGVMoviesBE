@@ -135,14 +135,15 @@ public class FileService {
             Path filePath = Paths.get(uploadDir).resolve(fileName).normalize().toAbsolutePath();
             return Files.deleteIfExists(filePath);
         }
-        return false;
+        Path filePath = Paths.get(uploadDir).resolve(fileName).normalize().toAbsolutePath();
+        return Files.deleteIfExists(filePath);
     }
 
     public List<Long> handleDeleteMultiFile(DeleteMultiFileRequest deleteMultiFileRequest) throws IOException {
         List<Long> fileDeletedIds = new ArrayList<>();
-        for(FileInfoRequest file : deleteMultiFileRequest.getData()){
+        for (FileInfoRequest file : deleteMultiFileRequest.getData()) {
             boolean deleted = this.deleteFileStoraged(file.getFileName());
-            if(deleted){
+            if (deleted) {
                 fileDeletedIds.add(file.getId());
             }
         }

@@ -32,6 +32,10 @@ public enum MessageResponse {
     THEATER_GET_ALL_SUCCESS("theater-get-all-success"),
     THEATER_UPDATE_SUCCESS("theater-update-success"),
     THEATER_DELETE_SUCCESS("theater-delete-success"),
+    CINEMASTYPE_ADD_NEW_SUCCESS("cinemas-type-add-new-success"),
+    CINEMASTYPE_GET_ALL_SUCCESS("cinemas-type-get-all-success"),
+    CINEMASTYPE_UPDATE_SUCCESS("cinemas-type-update-success"),
+    CINEMASTYPE_DELETE_SUCCESS("cinemas-type-delete-success"),
     ;
     private final String message;
 }
