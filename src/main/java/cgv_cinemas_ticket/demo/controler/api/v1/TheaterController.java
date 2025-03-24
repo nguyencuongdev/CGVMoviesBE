@@ -60,15 +60,15 @@ public class TheaterController {
                 .build());
     }
 
-//    @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('CONTENT_MANAGER')")
-//    ResponseEntity<ApiResponse<Void>> deleteTheater(@PathVariable String id) throws AppException {
-//        MessageResponse messageResponse = MessageResponse.THEATER_DELETE_SUCCESS;
-//        ticketMovieService.handleDeleteTheater(id);
-//        return ResponseEntity.ok(ApiResponse.<Void>builder()
-//                .status(true)
-//                .statusCode(HttpStatus.OK.value())
-//                .message(messageResponse.getMessage())
-//                .build());
-//    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+    ResponseEntity<ApiResponse<Void>> deleteTheater(@PathVariable String id) throws AppException {
+        MessageResponse messageResponse = MessageResponse.THEATER_DELETE_SUCCESS;
+        theaterService.handleDeleteTheater(id);
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .status(true)
+                .statusCode(HttpStatus.OK.value())
+                .message(messageResponse.getMessage())
+                .build());
+    }
 }

@@ -104,12 +104,19 @@ public class TheaterService {
         theaterResponse.setImages(theaterImageResponseList);
         return theaterResponse;
     }
-//    public boolean handleDeleteTicketMovie(String id) throws AppException {
-//        ErrorCode errorCode = ErrorCode.TICKET_MOVIE_NOT_EXISTED;
-//        TicketMovie ticketMovie = ticketMovieRepository.findById(Long.parseLong(id))
-//                .orElseThrow(() ->
-//                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
-//        ticketMovieRepository.deleteById(ticketMovie.getId());
-//        return true;
-//    }
+    public void handleDeleteTheater(String id) throws AppException {
+        ErrorCode errorCode = ErrorCode.THEATER_NOT_EXISTED;
+        Theater theater = theaterRepository.findById(Long.parseLong(id))
+                .orElseThrow(() -> new AppException(errorCode.getMessage(), errorCode.getStatusCode().value()));
+        Set<Long> theaterImageIds = new HashSet<>();
+        theater.getImages().forEach(fileImage -> {
+            try {
+                fileService.deleteFileStoraged(fileImage.getFileName());
+            } catch (Exception ex) {
+                log.error("Delete file with fileName: {} get a error: {}", fileImage.getFileName(), ex.getMessage());
+            }
+        });
+        theaterImageRepository.deleteAllById(theaterImageIds);
+        theaterRepository.deleteById(theater.getId());
+    }
 }
