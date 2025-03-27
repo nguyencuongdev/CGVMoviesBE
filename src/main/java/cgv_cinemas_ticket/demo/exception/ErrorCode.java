@@ -30,7 +30,8 @@ public enum ErrorCode {
     POPCOM_NOT_EXISTED(1017, "popcom-not-existed", HttpStatus.NOT_FOUND),
     TICKET_MOVIE_NOT_EXISTED(1018, "ticket_movie-not-existed", HttpStatus.NOT_FOUND),
     THEATER_NOT_EXISTED(1019, "theater-not-existed", HttpStatus.NOT_FOUND),
-    CINEMASTYPE_NOT_EXISTED(1120, "cinemas-type-not-existed", HttpStatus.NOT_FOUND);
+    CINEMASTYPE_NOT_EXISTED(1120, "cinemas-type-not-existed", HttpStatus.NOT_FOUND),
+    CINEMAS_NOT_EXISTED(1121, "cinemas-not-existed", HttpStatus.NOT_FOUND);
 
     private ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

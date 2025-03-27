@@ -21,12 +21,10 @@ public class Cinemas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-    String avatar;
     boolean status;
-    String note;
     int standardChairs;
     int vipChairs;
-    int sweetBoxChairs;
+    int sweetboxChairs;
 
     @OneToOne
     @JoinColumn(name = "theaters_ID", nullable = false)

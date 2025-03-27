@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ValidationExceptionResponse {
+public class ValidationExceptionResponse extends Throwable {
     boolean status;
     int statusCode;
     String message;
