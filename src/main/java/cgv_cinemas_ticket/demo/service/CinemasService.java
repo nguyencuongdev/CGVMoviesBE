@@ -2,6 +2,7 @@ package cgv_cinemas_ticket.demo.service;
 
 import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.CinemasNewOrUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.GetAllCinemasFilterParams;
 import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
 import cgv_cinemas_ticket.demo.dto.response.ValidationExceptionResponse;
 import cgv_cinemas_ticket.demo.dto.response.admin.CinemasResponse;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,6 +81,64 @@ public class CinemasService {
                 .totalElements(totalCinemasInDB)
                 .data(cinemasResponseList)
                 .build();
+    }
+
+    public DataListResponseWithPagination<List<CinemasResponse>> handleGetAllCinemas(PaginationRequestParams paginationParams, GetAllCinemasFilterParams filterParams) throws AppException {
+        int page = paginationParams.getPage();
+        int size = paginationParams.getSize();
+        List<Cinemas> cinemasListMatchedFilterLimited = new ArrayList<>();
+        List<Cinemas> cinemasListMatchedFilter = new ArrayList<>();
+        List<Cinemas> cinemasListInDB = new ArrayList<>();
+        if (Objects.isNull(filterParams.getSearchValue())) {
+            cinemasListInDB = cinemasRepository.findAll();
+        } else {
+            String searchValue = filterParams.getSearchValue();
+            cinemasListInDB = cinemasRepository.findByNameContainingIgnoreCaseOrTheater_NameContainingIgnoreCaseOrCinemasType_NameContainingIgnoreCase(searchValue, searchValue, searchValue);
+        }
+        List<String> filterByFileds = new ArrayList<>();
+        if(Objects.nonNull(filterParams.getStatus())) filterByFileds.add("status");
+        if(Objects.nonNull(filterParams.getCinemas_type_ID())) filterByFileds.add("cinemas_type");
+        if(Objects.nonNull(filterParams.getTheater_ID())) filterByFileds.add("theater");
+
+        for (Cinemas cinemas : cinemasListInDB) {
+            boolean checkMatch = isCheckCinemasMatchFilter(filterParams, cinemas, filterByFileds);
+            if(checkMatch){
+                cinemasListMatchedFilter.add(cinemas);
+            }
+        }
+        int totalElements = cinemasListMatchedFilter.size();
+        int totalPages = (int) Math.ceil((double) totalElements / paginationParams.getSize());
+
+        if (totalPages > 1) {
+            for (int index = page * size / size; index < (size * page + size) && index < totalPages; index++) {
+                cinemasListMatchedFilterLimited.add(cinemasListMatchedFilter.get(index));
+            }
+        } else {
+            cinemasListMatchedFilterLimited = cinemasListMatchedFilter;
+        }
+        List<CinemasResponse> cinemasResponseList = cinemasListMatchedFilterLimited.stream().map(cinemasMapper::toCinemasToCinemasResponse).toList();
+        return DataListResponseWithPagination.<List<CinemasResponse>>builder()
+                .page(page)
+                .size(size)
+                .totalPages(totalPages)
+                .totalElements(totalElements)
+                .data(cinemasResponseList)
+                .build();
+    }
+
+    private static boolean isCheckCinemasMatchFilter(GetAllCinemasFilterParams filterParams, Cinemas cinemas, List<String> filterByFileds) {
+        boolean checkMatch = true;
+        if(filterByFileds.contains("theater") && !Objects.equals(filterParams.getTheater_ID(), cinemas.getTheater().getId())){
+            checkMatch = false;
+        }
+        if(filterByFileds.contains("cinemas_type") && !Objects.equals(filterParams.getCinemas_type_ID(), cinemas.getCinemasType().getId())){
+            checkMatch = false;
+        }
+        if(filterByFileds.contains("cinemas_type")){
+            boolean status = Objects.equals(filterParams.getStatus(), "1");
+           if(status == cinemas.isStatus()) checkMatch = true;
+        }
+        return checkMatch;
     }
 
 
