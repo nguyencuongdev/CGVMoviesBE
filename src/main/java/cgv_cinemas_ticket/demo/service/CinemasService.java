@@ -1,6 +1,8 @@
 package cgv_cinemas_ticket.demo.service;
 
+import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.CinemasNewOrUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
 import cgv_cinemas_ticket.demo.dto.response.ValidationExceptionResponse;
 import cgv_cinemas_ticket.demo.dto.response.admin.CinemasResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
@@ -16,6 +18,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -58,13 +63,24 @@ public class CinemasService {
         return cinemasMapper.toCinemasToCinemasResponse(cinemas);
     }
 
-    public List<CinemasResponse> handleGetAllCinemasOfTheater(String theaterID) throws AppException {
+    public DataListResponseWithPagination<List<CinemasResponse>> handleGetAllCinemasOfTheater(String theaterID, PaginationRequestParams paginationParams) throws AppException {
         Theater theater = theaterRepository.findById(Long.parseLong(theaterID)).orElseThrow(
                 () -> new AppException("theater-not-exist", HttpStatus.NOT_FOUND.value())
         );
-        List<Cinemas> cinemasList = cinemasRepository.findAllByTheater(theater);
-        return cinemasList.stream().map(cinemasMapper::toCinemasToCinemasResponse).toList();
+        Pageable pagination = PageRequest.of(paginationParams.getPage(), paginationParams.getSize());
+        Page<Cinemas> cinemasPage = cinemasRepository.findAllByTheater(theater, pagination);
+        int totalCinemasInDB = cinemasRepository.countByTheater(theater);
+        int totalPages = (int) Math.ceil((double) totalCinemasInDB / paginationParams.getSize());
+        List<CinemasResponse> cinemasResponseList = cinemasPage.stream().map(cinemasMapper::toCinemasToCinemasResponse).toList();
+        return DataListResponseWithPagination.<List<CinemasResponse>>builder()
+                .page(paginationParams.getPage())
+                .size(paginationParams.getSize())
+                .totalPages(totalPages)
+                .totalElements(totalCinemasInDB)
+                .data(cinemasResponseList)
+                .build();
     }
+
 
     public CinemasResponse handleUpdateCinemas(String id, CinemasNewOrUpdateRequest cinemasUpdateRequest) throws AppException, ValidationExceptionResponse {
         Map<String, String> errors = new HashMap<>();
@@ -99,7 +115,7 @@ public class CinemasService {
         ErrorCode errorCode = ErrorCode.CINEMAS_NOT_EXISTED;
         Cinemas cinemas = cinemasRepository.findById(Long.parseLong(id))
                 .orElseThrow(() ->
-                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
+                        new AppException(errorCode.getMessage(), errorCode.getStatusCode().value()));
         cinemasRepository.deleteById(cinemas.getId());
         return true;
     }

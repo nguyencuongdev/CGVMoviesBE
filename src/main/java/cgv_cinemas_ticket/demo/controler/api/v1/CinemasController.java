@@ -1,8 +1,10 @@
 package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.constraint.MessageResponse;
+import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.CinemasNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
+import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
 import cgv_cinemas_ticket.demo.dto.response.ValidationExceptionResponse;
 import cgv_cinemas_ticket.demo.dto.response.admin.CinemasResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
@@ -33,20 +35,25 @@ public class CinemasController {
                 .status(true)
                 .statusCode(HttpStatus.OK.value())
                 .message(messageResponse.getMessage())
-                        .data(cinemasService.handleAddNewCinemas(cinemasNewRequest))
+                .data(cinemasService.handleAddNewCinemas(cinemasNewRequest))
                 .build()
-    );
+        );
     }
 
     @GetMapping("/by-theater/{theaterID}")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<List<CinemasResponse>>> getAllCinemas(@PathVariable String theaterID) throws AppException {
+    ResponseEntity<ApiResponse<List<CinemasResponse>>> getAllCinemasByTheater(@PathVariable String theaterID, @ModelAttribute @Valid PaginationRequestParams paginationParams) throws AppException {
         MessageResponse messageResponse = MessageResponse.CINEMAS_GET_ALL_SUCCESS;
+        DataListResponseWithPagination<List<CinemasResponse>> dataCinemasResponseList = cinemasService.handleGetAllCinemasOfTheater(theaterID, paginationParams);
         return ResponseEntity.ok(ApiResponse.<List<CinemasResponse>>builder()
                 .status(true)
                 .statusCode(HttpStatus.OK.value())
                 .message(messageResponse.getMessage())
-                .data(cinemasService.handleGetAllCinemasOfTheater(theaterID))
+                .size(paginationParams.getSize())
+                .page(paginationParams.getPage())
+                .totalElements(dataCinemasResponseList.getTotalElements())
+                .totalPages(dataCinemasResponseList.getTotalPages())
+                .data(dataCinemasResponseList.getData())
                 .build());
     }
 

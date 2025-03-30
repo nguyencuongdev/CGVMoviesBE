@@ -12,13 +12,10 @@ import lombok.experimental.FieldDefaults;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse<T> {
-    String message;
-    int statusCode;
-    boolean status;
+public class DataListResponseWithPagination<T> {
+    T data;
     int page;
     int size;
     int totalPages;
     int totalElements;
-    T data;
 }
