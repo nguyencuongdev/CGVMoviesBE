@@ -113,7 +113,7 @@ public class CinemasService {
             for (int index = page * size / size; index < (size * page + size) && index < totalPages; index++) {
                 cinemasListMatchedFilterLimited.add(cinemasListMatchedFilter.get(index));
             }
-        } else {
+        } else if(totalPages == 1 && page == 0) {
             cinemasListMatchedFilterLimited = cinemasListMatchedFilter;
         }
         List<CinemasResponse> cinemasResponseList = cinemasListMatchedFilterLimited.stream().map(cinemasMapper::toCinemasToCinemasResponse).toList();
@@ -134,9 +134,10 @@ public class CinemasService {
         if(filterByFileds.contains("cinemas_type") && !Objects.equals(filterParams.getCinemas_type_ID(), cinemas.getCinemasType().getId())){
             checkMatch = false;
         }
-        if(filterByFileds.contains("cinemas_type")){
+
+        if(filterByFileds.contains("status")){
             boolean status = Objects.equals(filterParams.getStatus(), "1");
-           if(status == cinemas.isStatus()) checkMatch = true;
+            checkMatch = status == cinemas.isStatus();
         }
         return checkMatch;
     }

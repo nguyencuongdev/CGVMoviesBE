@@ -16,5 +16,5 @@ public class PaginationRequestParams {
     private Integer page = 0; // default là 0
 
     @Min(value = 1, message = "Page size must be >= 1")
-    private Integer size = 10; // default là 10
+    private Integer size = 20; // default là 10
 }
