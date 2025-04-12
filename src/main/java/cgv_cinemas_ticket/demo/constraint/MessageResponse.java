@@ -40,6 +40,9 @@ public enum MessageResponse {
     CINEMAS_GET_ALL_SUCCESS("cinemas-get-all-success"),
     CINEMAS_UPDATE_SUCCESS("cinemas-update-success"),
     CINEMAS_DELETE_SUCCESS("cinemas-delete-success"),
+    MOVIE_CATEGORY_ADD_NEW_SUCCESS("movie-category-add-new-success"),
+    MOVIE_CATEGORY_GET_ALL_SUCCESS("movie-category-get-all-success"),
+    MOVIE_CATEGORY_UPDATE_SUCCESS("movie-category-update-success"),
     ;
     private final String message;
 }

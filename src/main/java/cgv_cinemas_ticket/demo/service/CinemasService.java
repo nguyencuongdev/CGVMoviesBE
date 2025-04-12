@@ -96,24 +96,26 @@ public class CinemasService {
             cinemasListInDB = cinemasRepository.findByNameContainingIgnoreCaseOrTheater_NameContainingIgnoreCaseOrCinemasType_NameContainingIgnoreCase(searchValue, searchValue, searchValue);
         }
         List<String> filterByFileds = new ArrayList<>();
-        if(Objects.nonNull(filterParams.getStatus())) filterByFileds.add("status");
-        if(Objects.nonNull(filterParams.getCinemas_type_ID())) filterByFileds.add("cinemas_type");
-        if(Objects.nonNull(filterParams.getTheater_ID())) filterByFileds.add("theater");
+        if (Objects.nonNull(filterParams.getStatus())) filterByFileds.add("status");
+        if (Objects.nonNull(filterParams.getCinemas_type_ID())) filterByFileds.add("cinemas_type");
+        if (Objects.nonNull(filterParams.getTheater_ID())) filterByFileds.add("theater");
+
 
         for (Cinemas cinemas : cinemasListInDB) {
             boolean checkMatch = isCheckCinemasMatchFilter(filterParams, cinemas, filterByFileds);
-            if(checkMatch){
+            if (checkMatch) {
                 cinemasListMatchedFilter.add(cinemas);
             }
         }
         int totalElements = cinemasListMatchedFilter.size();
         int totalPages = (int) Math.ceil((double) totalElements / paginationParams.getSize());
 
+//           Cinemas list matched filter limited
         if (totalPages > 1) {
-            for (int index = page * size / size; index < (size * page + size) && index < totalPages; index++) {
+            for (int index = page * size; index < (size * page + size) && index < totalElements; index++) {
                 cinemasListMatchedFilterLimited.add(cinemasListMatchedFilter.get(index));
             }
-        } else if(totalPages == 1 && page == 0) {
+        } else if (totalPages == 1 && page == 0) {
             cinemasListMatchedFilterLimited = cinemasListMatchedFilter;
         }
         List<CinemasResponse> cinemasResponseList = cinemasListMatchedFilterLimited.stream().map(cinemasMapper::toCinemasToCinemasResponse).toList();
@@ -128,14 +130,14 @@ public class CinemasService {
 
     private static boolean isCheckCinemasMatchFilter(GetAllCinemasFilterParams filterParams, Cinemas cinemas, List<String> filterByFileds) {
         boolean checkMatch = true;
-        if(filterByFileds.contains("theater") && !Objects.equals(filterParams.getTheater_ID(), cinemas.getTheater().getId())){
+        if (filterByFileds.contains("theater") && !Objects.equals(filterParams.getTheater_ID(), cinemas.getTheater().getId())) {
             checkMatch = false;
         }
-        if(filterByFileds.contains("cinemas_type") && !Objects.equals(filterParams.getCinemas_type_ID(), cinemas.getCinemasType().getId())){
+        if (filterByFileds.contains("cinemas_type") && !Objects.equals(filterParams.getCinemas_type_ID(), cinemas.getCinemasType().getId())) {
             checkMatch = false;
         }
 
-        if(filterByFileds.contains("status")){
+        if (filterByFileds.contains("status")) {
             boolean status = Objects.equals(filterParams.getStatus(), "1");
             checkMatch = status == cinemas.isStatus();
         }
