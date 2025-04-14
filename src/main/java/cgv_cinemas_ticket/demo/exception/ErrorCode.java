@@ -32,7 +32,8 @@ public enum ErrorCode {
     THEATER_NOT_EXISTED(1019, "theater-not-existed", HttpStatus.NOT_FOUND),
     CINEMASTYPE_NOT_EXISTED(1120, "cinemas-type-not-existed", HttpStatus.NOT_FOUND),
     CINEMAS_NOT_EXISTED(1121, "cinemas-not-existed", HttpStatus.NOT_FOUND),
-    MOVIE_CATEGORY_NOT_EXISTED(1122, "movie-category-not-existed", HttpStatus.NOT_FOUND);
+    MOVIE_CATEGORY_NOT_EXISTED(1122, "movie-category-not-existed", HttpStatus.NOT_FOUND),
+    DUPLICATE_RESOURCE(1123, "error-duplicate-resourse", HttpStatus.BAD_REQUEST);
 
     private ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

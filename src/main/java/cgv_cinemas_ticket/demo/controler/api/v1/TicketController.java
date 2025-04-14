@@ -61,15 +61,15 @@ public class TicketController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<TicketMovieResponse>> deleteTicketMovie(@PathVariable String id) throws AppException {
-        MessageResponse messageResponse = MessageResponse.TICKET_MOVIE_DELETE_SUCCESS;
-        ticketMovieService.handleDeleteTicketMovie(id);
-        return ResponseEntity.ok(ApiResponse.<TicketMovieResponse>builder()
-                .status(true)
-                .statusCode(HttpStatus.OK.value())
-                .message(messageResponse.getMessage())
-                .build());
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+//    ResponseEntity<ApiResponse<TicketMovieResponse>> deleteTicketMovie(@PathVariable String id) throws AppException {
+//        MessageResponse messageResponse = MessageResponse.TICKET_MOVIE_DELETE_SUCCESS;
+//        ticketMovieService.handleDeleteTicketMovie(id);
+//        return ResponseEntity.ok(ApiResponse.<TicketMovieResponse>builder()
+//                .status(true)
+//                .statusCode(HttpStatus.OK.value())
+//                .message(messageResponse.getMessage())
+//                .build());
+//    }
 }

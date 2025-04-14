@@ -44,12 +44,12 @@ public class TicketMoiveService {
         ticketMovieRepository.save(ticketMovie);
         return ticketMovieMapper.toTicketMovieToTicketMovieResponse(ticketMovie);
     }
-    public boolean handleDeleteTicketMovie(String id) throws AppException {
-        ErrorCode errorCode = ErrorCode.TICKET_MOVIE_NOT_EXISTED;
-        TicketMovie ticketMovie = ticketMovieRepository.findById(Long.parseLong(id))
-                .orElseThrow(() ->
-                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
-        ticketMovieRepository.deleteById(ticketMovie.getId());
-        return true;
-    }
+//    public boolean handleDeleteTicketMovie(String id) throws AppException {
+//        ErrorCode errorCode = ErrorCode.TICKET_MOVIE_NOT_EXISTED;
+//        TicketMovie ticketMovie = ticketMovieRepository.findById(Long.parseLong(id))
+//                .orElseThrow(() ->
+//                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
+//        ticketMovieRepository.deleteById(ticketMovie.getId());
+//        return true;
+//    }
 }

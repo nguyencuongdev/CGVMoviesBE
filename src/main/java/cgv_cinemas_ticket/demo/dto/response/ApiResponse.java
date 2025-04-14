@@ -21,4 +21,5 @@ public class ApiResponse<T> {
     int totalPages;
     int totalElements;
     T data;
+    Object errors;
 }

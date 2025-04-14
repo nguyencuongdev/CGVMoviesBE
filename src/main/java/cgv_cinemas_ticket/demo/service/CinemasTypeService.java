@@ -64,20 +64,20 @@ public class CinemasTypeService {
     }
 
 
-    public boolean handleDeleteCinemasType(String id) throws AppException {
-        ErrorCode errorCode = ErrorCode.POPCOM_NOT_EXISTED;
-        CinemasType cinemasType = cinemasTypeRepository.findById(Long.parseLong(id))
-                .orElseThrow(() ->
-                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
-        cinemasTypeRepository.deleteById(cinemasType.getId());
-        String[] arrayStringAvatarSplit = cinemasType.getAvatar().split("/");
-        int indexGetFileNameAvatar = arrayStringAvatarSplit.length - 1;
-        String fileNameAvatar = arrayStringAvatarSplit[indexGetFileNameAvatar];
-        try {
-            fileService.deleteFileStoraged(fileNameAvatar);
-        } catch (Exception ex) {
-            log.error("Error when delete avatar of cinemas type{}", ex.getMessage());
-        }
-        return true;
-    }
+//    public boolean handleDeleteCinemasType(String id) throws AppException {
+//        ErrorCode errorCode = ErrorCode.POPCOM_NOT_EXISTED;
+//        CinemasType cinemasType = cinemasTypeRepository.findById(Long.parseLong(id))
+//                .orElseThrow(() ->
+//                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
+//        cinemasTypeRepository.deleteById(cinemasType.getId());
+//        String[] arrayStringAvatarSplit = cinemasType.getAvatar().split("/");
+//        int indexGetFileNameAvatar = arrayStringAvatarSplit.length - 1;
+//        String fileNameAvatar = arrayStringAvatarSplit[indexGetFileNameAvatar];
+//        try {
+//            fileService.deleteFileStoraged(fileNameAvatar);
+//        } catch (Exception ex) {
+//            log.error("Error when delete avatar of cinemas type{}", ex.getMessage());
+//        }
+//        return true;
+//    }
 }

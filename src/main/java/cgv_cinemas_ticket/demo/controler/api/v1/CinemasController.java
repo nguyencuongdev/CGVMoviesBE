@@ -6,7 +6,7 @@ import cgv_cinemas_ticket.demo.dto.request.admin.CinemasNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.request.admin.GetAllCinemasFilterParams;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
-import cgv_cinemas_ticket.demo.dto.response.ValidationExceptionResponse;
+import cgv_cinemas_ticket.demo.exception.ValidationException;
 import cgv_cinemas_ticket.demo.dto.response.admin.CinemasResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.service.CinemasService;
@@ -30,7 +30,7 @@ public class CinemasController {
 
     @PostMapping("")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<CinemasResponse>> addNewCinemas(@RequestBody @Valid CinemasNewOrUpdateRequest cinemasNewRequest) throws ValidationExceptionResponse {
+    ResponseEntity<ApiResponse<CinemasResponse>> addNewCinemas(@RequestBody @Valid CinemasNewOrUpdateRequest cinemasNewRequest) throws ValidationException {
         MessageResponse messageResponse = MessageResponse.CINEMAS_ADD_NEW_SUCCESS;
         return ResponseEntity.ok(ApiResponse.<CinemasResponse>builder()
                 .status(true)
@@ -76,7 +76,7 @@ public class CinemasController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<CinemasResponse>> updateCinemas(@PathVariable String id, @RequestBody @Valid CinemasNewOrUpdateRequest cinemasUpdateRequest) throws AppException, ValidationExceptionResponse {
+    ResponseEntity<ApiResponse<CinemasResponse>> updateCinemas(@PathVariable String id, @RequestBody @Valid CinemasNewOrUpdateRequest cinemasUpdateRequest) throws AppException, ValidationException {
         MessageResponse messageResponse = MessageResponse.CINEMAS_UPDATE_SUCCESS;
         return ResponseEntity.ok(ApiResponse.<CinemasResponse>builder()
                 .status(true)
@@ -86,15 +86,15 @@ public class CinemasController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<CinemasResponse>> deleteCinemas(@PathVariable String id) throws AppException {
-        MessageResponse messageResponse = MessageResponse.CINEMAS_DELETE_SUCCESS;
-        cinemasService.handleDeleteCinemas(id);
-        return ResponseEntity.ok(ApiResponse.<CinemasResponse>builder()
-                .status(true)
-                .statusCode(HttpStatus.OK.value())
-                .message(messageResponse.getMessage())
-                .build());
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+//    ResponseEntity<ApiResponse<CinemasResponse>> deleteCinemas(@PathVariable String id) throws AppException {
+//        MessageResponse messageResponse = MessageResponse.CINEMAS_DELETE_SUCCESS;
+//        cinemasService.handleDeleteCinemas(id);
+//        return ResponseEntity.ok(ApiResponse.<CinemasResponse>builder()
+//                .status(true)
+//                .statusCode(HttpStatus.OK.value())
+//                .message(messageResponse.getMessage())
+//                .build());
+//    }
 }

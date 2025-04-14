@@ -61,15 +61,15 @@ public class LevelController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<LevelResponse>> deleteLevel(@PathVariable String id) throws AppException {
-        MessageResponse messageResponse = MessageResponse.LEVEL_DELETE_SUCCESS;
-        levelService.handleDeleteLevel(id);
-        return ResponseEntity.ok(ApiResponse.<LevelResponse>builder()
-                .status(true)
-                .statusCode(HttpStatus.OK.value())
-                .message(messageResponse.getMessage())
-                .build());
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+//    ResponseEntity<ApiResponse<LevelResponse>> deleteLevel(@PathVariable String id) throws AppException {
+//        MessageResponse messageResponse = MessageResponse.LEVEL_DELETE_SUCCESS;
+//        levelService.handleDeleteLevel(id);
+//        return ResponseEntity.ok(ApiResponse.<LevelResponse>builder()
+//                .status(true)
+//                .statusCode(HttpStatus.OK.value())
+//                .message(messageResponse.getMessage())
+//                .build());
+//    }
 }

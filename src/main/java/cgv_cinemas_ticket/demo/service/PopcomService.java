@@ -43,12 +43,12 @@ public class PopcomService {
         popcomRepository.save(popcom);
         return popcomMapper.toPopcomToPopcomResponse(popcom);
     }
-    public boolean handleDeletePopcom(String id) throws AppException {
-        ErrorCode errorCode = ErrorCode.POPCOM_NOT_EXISTED;
-        Popcom popcom = popcomRepository.findById(Long.parseLong(id))
-                .orElseThrow(() ->
-                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
-        popcomRepository.deleteById(popcom.getId());
-        return true;
-    }
+//    public boolean handleDeletePopcom(String id) throws AppException {
+//        ErrorCode errorCode = ErrorCode.POPCOM_NOT_EXISTED;
+//        Popcom popcom = popcomRepository.findById(Long.parseLong(id))
+//                .orElseThrow(() ->
+//                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
+//        popcomRepository.deleteById(popcom.getId());
+//        return true;
+//    }
 }

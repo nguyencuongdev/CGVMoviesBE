@@ -47,12 +47,12 @@ public class LevelService {
         levelRepository.save(level);
         return levelMapper.toLevelToLevelResponse(level);
     }
-    public boolean handleDeleteLevel(String id) throws AppException {
-        ErrorCode errorCode = ErrorCode.LEVEL_NOT_EXISTED;
-        Level level = levelRepository.findById(Long.parseLong(id))
-                .orElseThrow(() ->
-                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
-        levelRepository.deleteById(level.getId());
-        return true;
-    }
+//    public boolean handleDeleteLevel(String id) throws AppException {
+//        ErrorCode errorCode = ErrorCode.LEVEL_NOT_EXISTED;
+//        Level level = levelRepository.findById(Long.parseLong(id))
+//                .orElseThrow(() ->
+//                        new AppException(errorCode.getMessage(),errorCode.getStatusCode().value()));
+//        levelRepository.deleteById(level.getId());
+//        return true;
+//    }
 }

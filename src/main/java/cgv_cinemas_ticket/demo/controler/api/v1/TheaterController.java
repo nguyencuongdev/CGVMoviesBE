@@ -5,6 +5,7 @@ import cgv_cinemas_ticket.demo.dto.request.admin.TheaterNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
 import cgv_cinemas_ticket.demo.dto.response.admin.TheaterResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
+import cgv_cinemas_ticket.demo.exception.ValidationException;
 import cgv_cinemas_ticket.demo.service.TheaterService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,7 +27,7 @@ public class TheaterController {
 
     @PostMapping("")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<TheaterResponse>> addNewTheater(@RequestBody @Valid TheaterNewOrUpdateRequest theaterNewRequest) {
+    ResponseEntity<ApiResponse<TheaterResponse>> addNewTheater(@RequestBody @Valid TheaterNewOrUpdateRequest theaterNewRequest) throws ValidationException {
         MessageResponse messageResponse = MessageResponse.THEATER_ADD_NEW_SUCCESS;
         return ResponseEntity.ok(ApiResponse.<TheaterResponse>builder()
                 .status(true)
@@ -50,7 +51,7 @@ public class TheaterController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<TheaterResponse>> updateTheater(@PathVariable String id,@RequestBody @Valid TheaterNewOrUpdateRequest theaterUpdateRequest) throws  AppException {
+    ResponseEntity<ApiResponse<TheaterResponse>> updateTheater(@PathVariable String id,@RequestBody @Valid TheaterNewOrUpdateRequest theaterUpdateRequest) throws AppException, ValidationException {
         MessageResponse messageResponse = MessageResponse.THEATER_UPDATE_SUCCESS;
         return ResponseEntity.ok(ApiResponse.<TheaterResponse>builder()
                 .status(true)
@@ -60,15 +61,15 @@ public class TheaterController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<Void>> deleteTheater(@PathVariable String id) throws AppException {
-        MessageResponse messageResponse = MessageResponse.THEATER_DELETE_SUCCESS;
-        theaterService.handleDeleteTheater(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .status(true)
-                .statusCode(HttpStatus.OK.value())
-                .message(messageResponse.getMessage())
-                .build());
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+//    ResponseEntity<ApiResponse<Void>> deleteTheater(@PathVariable String id) throws AppException {
+//        MessageResponse messageResponse = MessageResponse.THEATER_DELETE_SUCCESS;
+//        theaterService.handleDeleteTheater(id);
+//        return ResponseEntity.ok(ApiResponse.<Void>builder()
+//                .status(true)
+//                .statusCode(HttpStatus.OK.value())
+//                .message(messageResponse.getMessage())
+//                .build());
+//    }
 }

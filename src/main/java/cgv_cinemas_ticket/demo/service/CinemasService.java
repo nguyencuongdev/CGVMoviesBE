@@ -4,7 +4,7 @@ import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.CinemasNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.request.admin.GetAllCinemasFilterParams;
 import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
-import cgv_cinemas_ticket.demo.dto.response.ValidationExceptionResponse;
+import cgv_cinemas_ticket.demo.exception.ValidationException;
 import cgv_cinemas_ticket.demo.dto.response.admin.CinemasResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ErrorCode;
@@ -26,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +37,7 @@ public class CinemasService {
     ITheaterRepository theaterRepository;
     ICinemasTypeRepository cinemasTypeRepository;
 
-    public CinemasResponse handleAddNewCinemas(CinemasNewOrUpdateRequest cinemasNewRequest) throws ValidationExceptionResponse {
+    public CinemasResponse handleAddNewCinemas(CinemasNewOrUpdateRequest cinemasNewRequest) throws ValidationException {
         Map<String, String> errors = new HashMap<>();
         Optional<Theater> theater = theaterRepository.findById(cinemasNewRequest.getTheater_ID());
         if (theater.isEmpty()) {
@@ -49,12 +48,8 @@ public class CinemasService {
             errors.put("cinemas_type_ID", "Cinemas type not existed!");
         }
 
-        if (!errors.isEmpty()) throw ValidationExceptionResponse.builder()
-                .status(false)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("Add new a cinemas failed!")
-                .errors(errors)
-                .build();
+        if (!errors.isEmpty())
+            throw new ValidationException("Add new a cinemas failed!", HttpStatus.BAD_REQUEST.value(), errors);
 
         Cinemas cinemas = cinemasMapper.toCinemasNewOrUpdateRequestToCinemas(cinemasNewRequest);
         cinemas.setCinemasType(cinemasType.get());
@@ -145,7 +140,7 @@ public class CinemasService {
     }
 
 
-    public CinemasResponse handleUpdateCinemas(String id, CinemasNewOrUpdateRequest cinemasUpdateRequest) throws AppException, ValidationExceptionResponse {
+    public CinemasResponse handleUpdateCinemas(String id, CinemasNewOrUpdateRequest cinemasUpdateRequest) throws AppException, ValidationException {
         Map<String, String> errors = new HashMap<>();
         Optional<Theater> theater = theaterRepository.findById(cinemasUpdateRequest.getTheater_ID());
         if (theater.isEmpty()) {
@@ -156,12 +151,11 @@ public class CinemasService {
             errors.put("cinemas_type_ID", "Cinemas type not existed!");
         }
 
-        if (!errors.isEmpty()) throw ValidationExceptionResponse.builder()
-                .status(false)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("Add new a cinemas failed!")
-                .errors(errors)
-                .build();
+        if (!errors.isEmpty()) throw new ValidationException(
+                "Add new a cinemas failed!",
+                HttpStatus.BAD_REQUEST.value(),
+                errors
+        );
         ErrorCode errorCode = ErrorCode.CINEMAS_NOT_EXISTED;
         Cinemas cinemas = cinemasRepository.findById(Long.parseLong(id))
                 .orElseThrow(() -> new AppException(errorCode.getMessage(), errorCode.getStatusCode().value()));
@@ -174,12 +168,12 @@ public class CinemasService {
     }
 
 
-    public boolean handleDeleteCinemas(String id) throws AppException {
-        ErrorCode errorCode = ErrorCode.CINEMAS_NOT_EXISTED;
-        Cinemas cinemas = cinemasRepository.findById(Long.parseLong(id))
-                .orElseThrow(() ->
-                        new AppException(errorCode.getMessage(), errorCode.getStatusCode().value()));
-        cinemasRepository.deleteById(cinemas.getId());
-        return true;
-    }
+//    public boolean handleDeleteCinemas(String id) throws AppException {
+//        ErrorCode errorCode = ErrorCode.CINEMAS_NOT_EXISTED;
+//        Cinemas cinemas = cinemasRepository.findById(Long.parseLong(id))
+//                .orElseThrow(() ->
+//                        new AppException(errorCode.getMessage(), errorCode.getStatusCode().value()));
+//        cinemasRepository.deleteById(cinemas.getId());
+//        return true;
+//    }
 }

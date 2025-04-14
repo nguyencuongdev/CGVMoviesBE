@@ -64,15 +64,15 @@ public class CinemasTypeController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<CinemasTypeResponse>> deleteCinemasType(@PathVariable String id) throws AppException {
-        MessageResponse messageResponse = MessageResponse.CINEMASTYPE_DELETE_SUCCESS;
-        cinemasTypeService.handleDeleteCinemasType(id);
-        return ResponseEntity.ok(ApiResponse.<CinemasTypeResponse>builder()
-                .status(true)
-                .statusCode(HttpStatus.OK.value())
-                .message(messageResponse.getMessage())
-                .build());
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+//    ResponseEntity<ApiResponse<CinemasTypeResponse>> deleteCinemasType(@PathVariable String id) throws AppException {
+//        MessageResponse messageResponse = MessageResponse.CINEMASTYPE_DELETE_SUCCESS;
+//        cinemasTypeService.handleDeleteCinemasType(id);
+//        return ResponseEntity.ok(ApiResponse.<CinemasTypeResponse>builder()
+//                .status(true)
+//                .statusCode(HttpStatus.OK.value())
+//                .message(messageResponse.getMessage())
+//                .build());
+//    }
 }

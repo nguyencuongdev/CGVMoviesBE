@@ -60,15 +60,15 @@ public class PopcomController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<PopcomResponse>> deletePopcom(@PathVariable String id) throws AppException {
-        MessageResponse messageResponse = MessageResponse.POPCOM_DELETE_SUCCESS;
-        popcomService.handleDeletePopcom(id);
-        return ResponseEntity.ok(ApiResponse.<PopcomResponse>builder()
-                .status(true)
-                .statusCode(HttpStatus.OK.value())
-                .message(messageResponse.getMessage())
-                .build());
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('CONTENT_MANAGER')")
+//    ResponseEntity<ApiResponse<PopcomResponse>> deletePopcom(@PathVariable String id) throws AppException {
+//        MessageResponse messageResponse = MessageResponse.POPCOM_DELETE_SUCCESS;
+//        popcomService.handleDeletePopcom(id);
+//        return ResponseEntity.ok(ApiResponse.<PopcomResponse>builder()
+//                .status(true)
+//                .statusCode(HttpStatus.OK.value())
+//                .message(messageResponse.getMessage())
+//                .build());
+//    }
 }
