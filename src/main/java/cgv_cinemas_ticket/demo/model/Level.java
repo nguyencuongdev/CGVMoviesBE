@@ -25,6 +25,8 @@ public class Level {
     String name;
     @Column(nullable = false)
     int point;
+    @Column(nullable = false)
+    boolean status;
 
     @CreatedDate
     Date createAt;

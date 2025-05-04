@@ -1,9 +1,13 @@
 package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.constraint.MessageResponse;
+import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
+import cgv_cinemas_ticket.demo.dto.request.admin.GetAllLevelFilterParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.LevelNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
+import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
 import cgv_cinemas_ticket.demo.dto.response.admin.LevelResponse;
+import cgv_cinemas_ticket.demo.dto.response.admin.PopcomResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.service.LevelService;
 import jakarta.validation.Valid;
@@ -39,13 +43,18 @@ public class LevelController {
 
     @GetMapping("")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<List<LevelResponse>>> getLevels() {
+    ResponseEntity<ApiResponse<List<LevelResponse>>> getLevels(@ModelAttribute @Valid PaginationRequestParams paginationParams, @ModelAttribute @Valid GetAllLevelFilterParams filterParams) {
         MessageResponse messageResponse = MessageResponse.LEVEL_GET_ALL_SUCCESS;
+        DataListResponseWithPagination<List<LevelResponse>> dataLevelResponseList = levelService.handleGetAllLevel(paginationParams, filterParams);
         return ResponseEntity.ok(ApiResponse.<List<LevelResponse>>builder()
                 .status(true)
                 .statusCode(HttpStatus.OK.value())
                 .message(messageResponse.getMessage())
-                .data(levelService.handleGetAllLevel())
+                .size(paginationParams.getSize())
+                .page(paginationParams.getPage())
+                .totalElements(dataLevelResponseList.getTotalElements())
+                .totalPages(dataLevelResponseList.getTotalPages())
+                .data(dataLevelResponseList.getData())
                 .build());
     }
 

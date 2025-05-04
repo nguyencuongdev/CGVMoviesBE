@@ -10,9 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PopcomNewOrUpdateRequest {
-    String name;
-    String srcImg;
-    int price;
-    boolean status;
+public class GetAllPopcomFilterParams {
+    String searchValue;
+    String status;
 }

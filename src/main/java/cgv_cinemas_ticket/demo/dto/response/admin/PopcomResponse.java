@@ -14,4 +14,5 @@ public class PopcomResponse {
     String name;
     String srcImg;
     int price;
+    boolean status;
 }

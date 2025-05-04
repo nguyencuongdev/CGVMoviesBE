@@ -22,4 +22,6 @@ public class Popcom {
     String srcImg;
     @Column(nullable = false)
     int price;
+    @Column(nullable = false)
+    boolean status;
 }

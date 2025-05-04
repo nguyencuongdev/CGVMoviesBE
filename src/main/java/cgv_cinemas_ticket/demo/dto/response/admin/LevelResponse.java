@@ -17,4 +17,5 @@ public class LevelResponse {
     String name;
     int point;
     String description;
+    boolean status;
 }

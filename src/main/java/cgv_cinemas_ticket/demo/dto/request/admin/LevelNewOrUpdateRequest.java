@@ -18,4 +18,5 @@ public class LevelNewOrUpdateRequest {
     @NotNull(message = "POINT_REQUIRED")
     int point;
     String description;
+    boolean status;
 }
