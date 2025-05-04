@@ -1,8 +1,11 @@
 package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.constraint.MessageResponse;
+import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
+import cgv_cinemas_ticket.demo.dto.request.admin.GetAllTheaterFilterParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.TheaterNewOrUpdateRequest;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
+import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
 import cgv_cinemas_ticket.demo.dto.response.admin.TheaterResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.exception.ValidationException;
@@ -33,25 +36,30 @@ public class TheaterController {
                 .status(true)
                 .statusCode(HttpStatus.OK.value())
                 .message(messageResponse.getMessage())
-                        .data(theaterService.handleAddNewTheater(theaterNewRequest))
+                .data(theaterService.handleAddNewTheater(theaterNewRequest))
                 .build());
     }
 
     @GetMapping("")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<List<TheaterResponse>>> getTheaters() {
+    ResponseEntity<ApiResponse<List<TheaterResponse>>> getTheaters(@ModelAttribute @Valid PaginationRequestParams paginationParams, @ModelAttribute @Valid GetAllTheaterFilterParams filterParams) {
         MessageResponse messageResponse = MessageResponse.THEATER_GET_ALL_SUCCESS;
+        DataListResponseWithPagination<List<TheaterResponse>> dataTheaterList = theaterService.handleGetAllTheater(paginationParams, filterParams);
         return ResponseEntity.ok(ApiResponse.<List<TheaterResponse>>builder()
                 .status(true)
                 .statusCode(HttpStatus.OK.value())
                 .message(messageResponse.getMessage())
-                .data(theaterService.handleGetAllTheater())
+                .page(dataTheaterList.getPage())
+                .totalPages(dataTheaterList.getTotalPages())
+                .totalElements(dataTheaterList.getTotalElements())
+                .size(dataTheaterList.getSize())
+                .data(dataTheaterList.getData())
                 .build());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<TheaterResponse>> updateTheater(@PathVariable String id,@RequestBody @Valid TheaterNewOrUpdateRequest theaterUpdateRequest) throws AppException, ValidationException {
+    ResponseEntity<ApiResponse<TheaterResponse>> updateTheater(@PathVariable String id, @RequestBody @Valid TheaterNewOrUpdateRequest theaterUpdateRequest) throws AppException, ValidationException {
         MessageResponse messageResponse = MessageResponse.THEATER_UPDATE_SUCCESS;
         return ResponseEntity.ok(ApiResponse.<TheaterResponse>builder()
                 .status(true)

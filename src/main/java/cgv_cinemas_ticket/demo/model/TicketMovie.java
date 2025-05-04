@@ -20,6 +20,8 @@ public class TicketMovie {
     String name;
     @Column(nullable = false)
     int price;
+    @Column(nullable = false)
+    boolean status;
     @Column(nullable = true)
     String note;
 }

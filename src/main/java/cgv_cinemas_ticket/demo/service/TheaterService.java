@@ -1,6 +1,10 @@
 package cgv_cinemas_ticket.demo.service;
 
+import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
+import cgv_cinemas_ticket.demo.dto.request.admin.GetAllTheaterFilterParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.TheaterNewOrUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
+import cgv_cinemas_ticket.demo.dto.response.admin.TicketMovieResponse;
 import cgv_cinemas_ticket.demo.exception.ValidationException;
 import cgv_cinemas_ticket.demo.dto.response.admin.TheaterImageResponse;
 import cgv_cinemas_ticket.demo.dto.response.admin.TheaterResponse;
@@ -10,13 +14,16 @@ import cgv_cinemas_ticket.demo.mapper.ITheaterMapper;
 import cgv_cinemas_ticket.demo.model.Theater;
 import cgv_cinemas_ticket.demo.model.TheaterImage;
 //import cgv_cinemas_ticket.demo.repository.IFileTempRepository;
+import cgv_cinemas_ticket.demo.model.TicketMovie;
 import cgv_cinemas_ticket.demo.repository.ITheaterImageRepository;
 import cgv_cinemas_ticket.demo.repository.ITheaterRepository;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,9 +68,49 @@ public class TheaterService {
         return theaterMapper.toTheaterToTheaterResponse(theater);
     }
 
-    public List<TheaterResponse> handleGetAllTheater() {
-        List<Theater> theaterList = theaterRepository.findAll();
-        return theaterList.stream().map(theaterMapper::toTheaterToTheaterResponse).toList();
+    public DataListResponseWithPagination<List<TheaterResponse>> handleGetAllTheater(PaginationRequestParams paginationParams, GetAllTheaterFilterParams filterParams) {
+        int page = paginationParams.getPage();
+        int size = paginationParams.getSize();
+        List<Theater> theaterListMatchedFilterLimited = new ArrayList<>();
+        List<Theater> theaterListMatchedFilter = new ArrayList<>();
+        List<Theater> theaterListInDB = new ArrayList<>();
+
+        if (Objects.isNull(filterParams.getSearchValue())) {
+            theaterListInDB = theaterRepository.findAll();
+        } else {
+            String searchValue = filterParams.getSearchValue();
+            theaterListInDB = theaterRepository.findAllByNameContainingIgnoreCase(searchValue);
+        }
+        List<String> filterByFields = new ArrayList<>();
+        if (Objects.nonNull(filterParams.getStatus())) filterByFields.add("status");
+        if (Objects.nonNull(filterParams.getCity())) filterByFields.add("city");
+
+        for (Theater theater : theaterListInDB) {
+            boolean checkMatch = isCheckTheaterMatchFilter(filterParams, theater, filterByFields);
+            if (checkMatch) {
+                theaterListMatchedFilter.add(theater);
+            }
+        }
+        int totalElements = theaterListMatchedFilter.size();
+        int totalPages = (int) Math.ceil((double) totalElements / paginationParams.getSize());
+
+        // Theater list matched filter limited
+        if (totalPages > 1) {
+            for (int index = page * size; index < (size * page + size) && index < totalElements; index++) {
+                theaterListMatchedFilterLimited.add(theaterListMatchedFilter.get(index));
+            }
+        } else if (totalPages == 1 && page == 0) {
+            theaterListMatchedFilterLimited = theaterListMatchedFilter;
+        }
+
+        List<TheaterResponse> theaterResponseList = theaterListMatchedFilterLimited.stream().map(theaterMapper::toTheaterToTheaterResponse).toList();
+        return DataListResponseWithPagination.<List<TheaterResponse>>builder()
+                .page(page)
+                .size(size)
+                .totalPages(totalPages)
+                .totalElements(totalElements)
+                .data(theaterResponseList)
+                .build();
     }
 
     //
@@ -134,7 +181,17 @@ public class TheaterService {
         }
         return errorMap;
     }
-
+    private static boolean isCheckTheaterMatchFilter(GetAllTheaterFilterParams filterParams, Theater theater, List<String> filterByFileds) {
+        boolean checkMatch = true;
+        if(filterByFileds.contains("city") && !Objects.equals(filterParams.getCity(), theater.getCity())){
+            checkMatch = false;
+        }
+        if (filterByFileds.contains("status")) {
+            boolean status = Objects.equals(filterParams.getStatus(), "1");
+            checkMatch = status == theater.isStatus();
+        }
+        return checkMatch;
+    }
 //    public void handleDeleteTheater(String id) throws AppException {
 //        ErrorCode errorCode = ErrorCode.THEATER_NOT_EXISTED;
 //        Theater theater = theaterRepository.findById(Long.parseLong(id))

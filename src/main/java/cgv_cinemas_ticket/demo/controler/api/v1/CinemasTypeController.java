@@ -1,15 +1,14 @@
 package cgv_cinemas_ticket.demo.controler.api.v1;
 
 import cgv_cinemas_ticket.demo.constraint.MessageResponse;
+import cgv_cinemas_ticket.demo.dto.request.PaginationRequestParams;
 import cgv_cinemas_ticket.demo.dto.request.admin.CinemasTypeNewOrUpdateRequest;
-import cgv_cinemas_ticket.demo.dto.request.admin.PopcomNewOrUpdateRequest;
+import cgv_cinemas_ticket.demo.dto.request.admin.GetAllCinemasTypeFilterParams;
 import cgv_cinemas_ticket.demo.dto.response.ApiResponse;
+import cgv_cinemas_ticket.demo.dto.response.DataListResponseWithPagination;
 import cgv_cinemas_ticket.demo.dto.response.admin.CinemasTypeResponse;
-import cgv_cinemas_ticket.demo.dto.response.admin.PopcomResponse;
 import cgv_cinemas_ticket.demo.exception.AppException;
 import cgv_cinemas_ticket.demo.service.CinemasTypeService;
-import cgv_cinemas_ticket.demo.service.FileService;
-import cgv_cinemas_ticket.demo.service.PopcomService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,13 +41,18 @@ public class CinemasTypeController {
 
     @GetMapping("")
     @PreAuthorize("hasRole('CONTENT_MANAGER')")
-    ResponseEntity<ApiResponse<List<CinemasTypeResponse>>> getAllCinemasType() {
+    ResponseEntity<ApiResponse<List<CinemasTypeResponse>>> getAllCinemasType(@ModelAttribute @Valid PaginationRequestParams paginationParams, @ModelAttribute @Valid GetAllCinemasTypeFilterParams filterParams) {
         MessageResponse messageResponse = MessageResponse.CINEMASTYPE_GET_ALL_SUCCESS;
+        DataListResponseWithPagination<List<CinemasTypeResponse>> dataCinemasTypeResponseList = cinemasTypeService.handleGetAllCinemasType(paginationParams, filterParams);
         return ResponseEntity.ok(ApiResponse.<List<CinemasTypeResponse>>builder()
                 .status(true)
                 .statusCode(HttpStatus.OK.value())
                 .message(messageResponse.getMessage())
-                .data(cinemasTypeService.handleGetAllCinemasType())
+                .page(dataCinemasTypeResponseList.getPage())
+                .totalPages(dataCinemasTypeResponseList.getTotalPages())
+                .totalElements(dataCinemasTypeResponseList.getTotalElements())
+                .size(dataCinemasTypeResponseList.getSize())
+                .data(dataCinemasTypeResponseList.getData())
                 .build());
     }
 
